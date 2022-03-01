@@ -1,0 +1,9 @@
+programme pn1 {
+    k := 81 ;
+    ecrire k ;
+    si ( k = 81 ; ) alors { k := k + 1 ; }
+    tantque ( k < 100 ; ) repeter {
+        k := k + 1 ;
+    }
+    ecrire k ;
+}

@@ -1,0 +1,11 @@
+Règle 3 : Toute double déclaration de variable dans le même bloc est interdite.
+Règle 4.2 : La constante entière est non nulle.
+Règle 6 : La variable est déclarée dans ce bloc ou dans un bloc englobant ; elle est de type entier. L’écriture/la lecture se fait sur une ligne de la sortie/entrée standard. L’expression est de type entier ou booléen. Dans le cas d’une expression booléenne, on écrit 0 ou 1.
+Règle 7 : Les parties gauche et droite de l’affectation sont de type entier.
+Règle 8.1 : La variable est déclarée dans ce bloc ou dans un bloc englobant.
+Règle 8.2 : La variable est déclarée dans ce bloc ou dans un bloc englobant ; elle est de type tableau ; l’expression est de type entier ; sa valeur est dans les bornes. Le premier élément de tableau est de rang 0.
+Règle 9 : L’expression est de type booléen.
+Règle 10.1 : La variable est déclarée dans ce bloc ou dans un bloc englobant ; elle est de type entier. Les deux expressions sont de type entier. La variable prend toutes les valeurs entre la première expression (incluse) et la seconde expression incluse avec un pas de +1. Les deux expressions sont évaluées avant l’itération. Aucun effet à l’exécution si l’intervalle est vide.
+Règle 10.2 : L’expression est de type booléen.
+Règles 11, 12, 13 : Les opérateurs +, - , * sont à opérandes et résultat entier ; les opérateurs < | > | = | # | <= | >= sont à
+opérandes entier et résultat booléen ; les opérateurs et, ou, non sont à opérandes et résultat booléen.

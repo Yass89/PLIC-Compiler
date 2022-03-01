@@ -1,0 +1,11 @@
+programme pn2 {
+    entier k ;
+    tableau [10] tab ; // Tab 8 entiers
+
+    k := 0 ;
+    pour i dans ( 1 ; .. 10 ; ) repeter {
+        k := k + 1 ;
+        // Bonjour
+        tab [i] := 7 ;
+    }
+}
