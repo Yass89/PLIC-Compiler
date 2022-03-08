@@ -1,0 +1,9 @@
+programme plic0_1 {
+
+    // declarer des entiers
+    entier k ; entier l ; entier i ;
+
+    // Affecter des valeurs
+    i := 57 ;
+    k := i ;    l := i ;
+}

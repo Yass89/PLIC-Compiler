@@ -46,6 +46,7 @@
 # *.ipr
 *.pdf
 *.xml
+.DS_Store
 
 # CMake
 cmake-build-*/
