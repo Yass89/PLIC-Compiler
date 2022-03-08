@@ -8,7 +8,6 @@ public class AnalyseurLexical {
 
     private final Scanner scanner;
 
-
     public AnalyseurLexical(File file) throws FileNotFoundException {
         this.scanner = new Scanner(file);
     }
@@ -36,4 +35,5 @@ public class AnalyseurLexical {
         } else uniteLexicale = "EOF";
         return uniteLexicale;
     }
+
 }
