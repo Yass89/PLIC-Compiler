@@ -1,4 +1,4 @@
-programme plic0_1 {
+programme pliczeroun {
 
     // declarer des entiers
     entier k ; entier l ; entier i ;
@@ -7,3 +7,7 @@ programme plic0_1 {
     i := 57 ;
     k := i ;    l := i ;
 }
+
+// Commentaire
+
+// Test 2 lignes

@@ -1,4 +1,4 @@
-programme plic0_2 {
+programme pliczerodeux {
     entier o ; entier i
 
     o := 256 ;

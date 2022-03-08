@@ -14,15 +14,26 @@ public class AnalyseurLexical {
     }
 
     public String next() {
-        String uniteLexicale;
+        String uniteLexicale = "";
         if (this.scanner.hasNext()) {
             uniteLexicale = this.scanner.next();
-            if (uniteLexicale.startsWith("//")) {
-                this.scanner.nextLine();
-                uniteLexicale = this.scanner.next();
-            }
-            return uniteLexicale;
-        } else return  "EOF";
 
+            // Verifier que l'unite lexicale n'est pas une ligne de commentaire
+            while (uniteLexicale.startsWith("//")) {
+
+                if (this.scanner.hasNext()) {
+                    // Retirer la ligne de commentaire
+                    this.scanner.nextLine();
+
+                    // Verifier que la ligne suivant le commentaire n'est pas la fin de fichier
+                    if (this.scanner.hasNext()) {
+
+                        // Prendre la nouvelle valeur
+                        uniteLexicale = this.scanner.next();
+                    } else uniteLexicale = "EOF";
+                } else uniteLexicale = "EOF";
+            }
+        } else uniteLexicale = "EOF";
+        return uniteLexicale;
     }
 }
