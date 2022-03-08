@@ -1,5 +1,7 @@
 package plic.analyse;
 
+import plic.Consts;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -18,7 +20,7 @@ public class AnalyseurLexical {
             uniteLexicale = this.scanner.next();
 
             // Verifier que l'unite lexicale n'est pas une ligne de commentaire
-            while (uniteLexicale.startsWith("//")) {
+            while (uniteLexicale.startsWith(Consts.COMMENTAIRES)) {
 
                 if (this.scanner.hasNext()) {
                     // Retirer la ligne de commentaire
@@ -29,10 +31,10 @@ public class AnalyseurLexical {
 
                         // Prendre la nouvelle valeur
                         uniteLexicale = this.scanner.next();
-                    } else uniteLexicale = "EOF";
-                } else uniteLexicale = "EOF";
+                    } else uniteLexicale = Consts.EOF;
+                } else uniteLexicale = Consts.EOF;
             }
-        } else uniteLexicale = "EOF";
+        } else uniteLexicale = Consts.EOF;
         return uniteLexicale;
     }
 

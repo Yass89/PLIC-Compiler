@@ -1,5 +1,6 @@
 package plic.tests;
 
+import plic.Consts;
 import plic.analyse.AnalyseurLexical;
 
 import java.io.File;
@@ -11,7 +12,7 @@ public class TestScanner {
 
         AnalyseurLexical analyseurLexical = new AnalyseurLexical(new File("src/plic/sources/plic0_1.plic"));
         String uniteLexicale = "";
-        while (!uniteLexicale.equals("EOF")) {
+        while (!uniteLexicale.equals(Consts.EOF)) {
             uniteLexicale = analyseurLexical.next();
             System.out.println(uniteLexicale);
         }
