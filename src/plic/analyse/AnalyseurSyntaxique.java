@@ -28,7 +28,7 @@ public class AnalyseurSyntaxique {
         this.uniteCourante = this.analyseurLexical.next();
         // Verifier que ce mot est bien un idf
         if(!this.estIdf()) {
-            throw new ErreurSyntaxique("idf attendu");
+            throw new ErreurSyntaxique("Idf attendu");
         }
         // Passage dans le bloc principal ( "{" )
         this.uniteCourante = this.analyseurLexical.next();
@@ -36,7 +36,7 @@ public class AnalyseurSyntaxique {
     }
 
     private void analyseTerminale(String terminal) throws ErreurSyntaxique {
-        if (!this.uniteCourante.equals(terminal)) throw new ErreurSyntaxique(terminal + "attendu");
+        if (!this.uniteCourante.equals(terminal)) throw new ErreurSyntaxique(terminal + " attendu");
         this.uniteCourante = this.analyseurLexical.next();
     }
 
@@ -49,15 +49,17 @@ public class AnalyseurSyntaxique {
     }
 
     private void analyseInstruction() {
-
     }
 
-    private void analyseEcrire() {
-
+    private void analyseEcrire() throws ErreurSyntaxique {
+        analyseTerminale(Consts.PRINT);
+        analyseTerminale(Consts.REGEX_ENTIERS);
     }
 
-    private void analyseAffectation() {
-
+    private void analyseAffectation() throws ErreurSyntaxique {
+        analyseTerminale(Consts.REGEX_IDF);
+        analyseTerminale(Consts.AFFECTATION);
+        analyseTerminale(Consts.REGEX_ENTIERS);
     }
 
     private void analyseAcces() {
@@ -69,7 +71,10 @@ public class AnalyseurSyntaxique {
     }
 
     private void analyseOperande() {
+    }
 
+    private boolean estConstanteEntiere() {
+        return true;
     }
 
     private boolean estIdf() {
