@@ -24,7 +24,6 @@ public class Plic {
         if (!file.exists()) throw new ErreurFile("Fichier source absent");
         if (file.isDirectory()) throw new ErreurFile("Repertoire renseigné");
         if (file.isHidden()) throw new ErreurFile("Le fichier est caché");
-
         AnalyseurSyntaxique analyseurSyntaxique = new AnalyseurSyntaxique(file);
         analyseurSyntaxique.analyse();
     }

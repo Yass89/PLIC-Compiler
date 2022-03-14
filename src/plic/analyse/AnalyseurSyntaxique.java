@@ -1,5 +1,6 @@
 package plic.analyse;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import plic.Consts;
 import plic.exceptions.ErreurSyntaxique;
 
@@ -36,24 +37,35 @@ public class AnalyseurSyntaxique {
     }
 
     private void analyseTerminale(String terminal) throws ErreurSyntaxique {
-        if (!this.uniteCourante.equals(terminal)) throw new ErreurSyntaxique(terminal + " attendu");
+        if (!this.uniteCourante.matches(terminal)) throw new ErreurSyntaxique(terminal + " attendu");
         this.uniteCourante = this.analyseurLexical.next();
     }
 
     private void analyseBloc() throws ErreurSyntaxique {
         this.analyseTerminale(Consts.BLOC_OPEN);
         // Iterer sur analyseDeclaration tant qu'il y a des declarations
+
         this.analyseInstruction();
         // Iterer sur analyseInstruction tant qu'il y a des intructions
         this.analyseTerminale(Consts.BLOC_CLOSE);
     }
 
-    private void analyseInstruction() {
+    private void analyseInstruction() throws ErreurSyntaxique {
+        if (estIdf()) {
+            analyseAffectation();
+        } else {
+            analyseEcrire();
+        }
     }
 
     private void analyseEcrire() throws ErreurSyntaxique {
         analyseTerminale(Consts.PRINT);
         analyseTerminale(Consts.REGEX_ENTIERS);
+    }
+
+    private void analyseDeclaration() throws ErreurSyntaxique {
+        analyseTerminale(Consts.TYPE);
+        analyseTerminale(Consts.REGEX_IDF);
     }
 
     private void analyseAffectation() throws ErreurSyntaxique {
@@ -62,18 +74,23 @@ public class AnalyseurSyntaxique {
         analyseTerminale(Consts.REGEX_ENTIERS);
     }
 
-    private void analyseAcces() {
-
+    private void analyseAcces() throws ErreurSyntaxique {
+        analyseTerminale(Consts.REGEX_IDF);
     }
 
-    private void analyseExpression() {
-
-    }
-
-    private void analyseOperande() {
+    private void analyseExpression() throws ErreurSyntaxique {
+        analyseTerminale(Consts.REGEX_IDF);
+        analyseTerminale(Consts.AFFECTATION);
+        analyseTerminale(Consts.REGEX_ENTIERS);
+        if (!estConstanteEntiere()) throw new ErreurSyntaxique("L'affectation ne se fait pas sur un entier");
     }
 
     private boolean estConstanteEntiere() {
+        try {
+            Integer.parseInt(this.uniteCourante);
+        } catch(NumberFormatException | NullPointerException e) {
+            return false;
+        }
         return true;
     }
 
