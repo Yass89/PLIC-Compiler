@@ -83,13 +83,12 @@ public class AnalyseurSyntaxique {
     }
 
     private void analyseAffectation() throws ErreurSyntaxique {
-        if(!this.estIdf()) {
-            throw new ErreurSyntaxique("Idf attendu");
-        }
-        this.uniteCourante = this.analyseurLexical.next();
+        analyseAcces();
         analyseTerminale(Consts.AFFECTATION);
-        if(!this.estConstanteEntiere()) {
-            throw new ErreurSyntaxique("Ce n'est pas une constante entiere");
+        if(!this.estIdf()) {
+            if(!this.estConstanteEntiere()) {
+                throw new ErreurSyntaxique("Idf attendu");
+            }
         }
         this.uniteCourante = this.analyseurLexical.next();
         analyseTerminale(Consts.SEPARATEUR);
