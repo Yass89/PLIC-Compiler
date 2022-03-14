@@ -188,7 +188,7 @@ public class AnalyseurSyntaxique {
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private void analyseExpression() throws ErreurSyntaxique {
-        
+
         // Verifier que l'UL est un Idf
         if(!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");

@@ -14,7 +14,7 @@ public class Plic {
         try {
             new Plic(args[0]);
         } catch (FileNotFoundException | ErreurFile| ErreurSyntaxique e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
