@@ -2,6 +2,7 @@ package plic.analyse;
 
 import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import plic.Consts;
+import plic.exceptions.ErreurFile;
 import plic.exceptions.ErreurSyntaxique;
 
 import java.io.File;
@@ -37,21 +38,24 @@ public class AnalyseurSyntaxique {
     }
 
     private void analyseTerminale(String terminal) throws ErreurSyntaxique {
-        if (!this.uniteCourante.matches(terminal)) throw new ErreurSyntaxique(terminal + " attendu");
+        if (!this.uniteCourante.equals(terminal)) throw new ErreurSyntaxique(terminal + " attendu");
         this.uniteCourante = this.analyseurLexical.next();
     }
 
     private void analyseBloc() throws ErreurSyntaxique {
         this.analyseTerminale(Consts.BLOC_OPEN);
         // Iterer sur analyseDeclaration tant qu'il y a des declarations
-
-        this.analyseInstruction();
+        while (!this.uniteCourante.equals(Consts.BLOC_CLOSE)) {
+            if (uniteCourante.equals("entier")) {
+                analyseDeclaration();
+            } else analyseInstruction();
+        }
         // Iterer sur analyseInstruction tant qu'il y a des intructions
         this.analyseTerminale(Consts.BLOC_CLOSE);
     }
 
     private void analyseInstruction() throws ErreurSyntaxique {
-        if (estIdf()) {
+        if (estIdf() && !this.uniteCourante.equals("ecrire")) {
             analyseAffectation();
         } else {
             analyseEcrire();
@@ -60,28 +64,54 @@ public class AnalyseurSyntaxique {
 
     private void analyseEcrire() throws ErreurSyntaxique {
         analyseTerminale(Consts.PRINT);
-        analyseTerminale(Consts.REGEX_ENTIERS);
+        if(!this.estConstanteEntiere()) {
+            if (!estIdf()) {
+                throw new ErreurSyntaxique("Ce n'est pas une constante entiere ou un Idf");
+            }
+        }
+        this.uniteCourante = this.analyseurLexical.next();
+        analyseTerminale(Consts.SEPARATEUR);
     }
 
     private void analyseDeclaration() throws ErreurSyntaxique {
         analyseTerminale(Consts.TYPE);
-        analyseTerminale(Consts.REGEX_IDF);
+        if(!this.estIdf()) {
+            throw new ErreurSyntaxique("Idf attendu");
+        }
+        this.uniteCourante = this.analyseurLexical.next();
+        analyseTerminale(Consts.SEPARATEUR);
     }
 
     private void analyseAffectation() throws ErreurSyntaxique {
-        analyseTerminale(Consts.REGEX_IDF);
+        if(!this.estIdf()) {
+            throw new ErreurSyntaxique("Idf attendu");
+        }
+        this.uniteCourante = this.analyseurLexical.next();
         analyseTerminale(Consts.AFFECTATION);
-        analyseTerminale(Consts.REGEX_ENTIERS);
+        if(!this.estConstanteEntiere()) {
+            throw new ErreurSyntaxique("Ce n'est pas une constante entiere");
+        }
+        this.uniteCourante = this.analyseurLexical.next();
+        analyseTerminale(Consts.SEPARATEUR);
     }
 
     private void analyseAcces() throws ErreurSyntaxique {
-        analyseTerminale(Consts.REGEX_IDF);
+        if(!this.estIdf()) {
+            throw new ErreurSyntaxique("Idf attendu");
+        }
+        this.uniteCourante = this.analyseurLexical.next();
     }
 
     private void analyseExpression() throws ErreurSyntaxique {
-        analyseTerminale(Consts.REGEX_IDF);
+        if(!this.estIdf()) {
+            throw new ErreurSyntaxique("Idf attendu");
+        }
+        this.uniteCourante = this.analyseurLexical.next();
         analyseTerminale(Consts.AFFECTATION);
-        analyseTerminale(Consts.REGEX_ENTIERS);
+        if(!this.estConstanteEntiere()) {
+            throw new ErreurSyntaxique("Ce n'est pas une constante entiere");
+        }
+        this.uniteCourante = this.analyseurLexical.next();
         if (!estConstanteEntiere()) throw new ErreurSyntaxique("L'affectation ne se fait pas sur un entier");
     }
 

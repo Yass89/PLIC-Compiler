@@ -9,6 +9,6 @@ public class Consts {
     public static final String BLOC_OPEN = "{";
     public static final String BLOC_CLOSE = "}";
     public static final String AFFECTATION = ":=";
-    public static final String REGEX_ENTIERS = "^[0-9]\\d*$";
     public static final String PRINT = "ecrire";
+    public static final String SEPARATEUR = ";";
 }
