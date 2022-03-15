@@ -60,7 +60,7 @@ public class AnalyseurSyntaxique {
         this.uniteCourante = this.analyseurLexical.next();
         // Verifier que ce mot est bien un idf
         if(!this.estIdf()) {
-            throw new ErreurSyntaxique("Idf attendu");
+            throw new ErreurSyntaxique("Idf attendu : nom du programme");
         }
         // Passage dans le bloc principal ( "{" )
         this.uniteCourante = this.analyseurLexical.next();
@@ -86,10 +86,11 @@ public class AnalyseurSyntaxique {
     private Bloc analyseBloc() throws ErreurSyntaxique, DoubleDeclaration {
 
         Bloc bloc = new Bloc();
+
+        // Regarder qu'on commence par {
         this.analyseTerminale(Consts.BLOC_OPEN);
         // Iterer sur analyseDeclaration et analyseInstruction tant qu'on est dans un bloc
         while (!this.uniteCourante.equals(Consts.BLOC_CLOSE)) {
-
             // Verifier si il s'agit d'une declaration ou d'une instruction
             if (uniteCourante.equals("entier")) {
                 analyseDeclaration();
@@ -124,10 +125,7 @@ public class AnalyseurSyntaxique {
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Ecrire analyseEcrire() throws ErreurSyntaxique {
-        // Regarder si l'UL est bien un "ecrire"
-        analyseTerminale(Consts.PRINT);
-
-        // Analyser l'expression
+       // Analyser l'expression
         Expression e = analyseExpression();
 
         Ecrire ecrire = new Ecrire(e);
@@ -171,9 +169,6 @@ public class AnalyseurSyntaxique {
         // Analyse qu'il s'agit d'un acces
         analyseAcces();
 
-        // Regarder que l'UL est un :=
-        analyseTerminale(Consts.AFFECTATION);
-
         // Analyseer qu'il s'agit d'une expression
         Expression e = analyseExpression();
 
@@ -206,25 +201,16 @@ public class AnalyseurSyntaxique {
 
         Expression expression;
 
-        // Verifier que l'UL est un Idf
-        if(!this.estIdf()) {
-            throw new ErreurSyntaxique("Idf attendu");
-        }
-        this.uniteCourante = this.analyseurLexical.next();
+        // Verifier que l'UL est un := si c'est dans le cas non ecrire
+        if (!this.uniteCourante.equals(Consts.PRINT)) {
+            analyseTerminale(Consts.AFFECTATION);
+        } else this.analyseurLexical.next();
 
-        // Verifier que l'UL est un :=
-        analyseTerminale(Consts.AFFECTATION);
-
-        // Verifier que l'UL est une constante entiere
-        if(this.pasConstanteEntiere() && !this.estIdf()) {
-            throw new ErreurSyntaxique("Ce n'est pas une constante entiere ou un idf");
-        }
-
-        if (estIdf() && !this.uniteCourante.equals(Consts.PRINT)) {
+        if (pasConstanteEntiere()) {
             expression = new Idf(this.uniteCourante);
 
         } else {
-            expression = new Nombre();
+            expression = new Nombre(Integer.parseInt(this.uniteCourante));
         }
 
         this.uniteCourante = this.analyseurLexical.next();

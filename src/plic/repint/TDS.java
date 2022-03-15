@@ -22,11 +22,11 @@ public class TDS {
     }
 
     public void ajouter(Entree e, Symbole s) throws DoubleDeclaration {
-        if (!tableSymboles.containsValue(s)) {
+        if (!tableSymboles.containsKey(e)) {
             cptDepl -= 4;
             s.setDeplacement(cptDepl);
             this.tableSymboles.put(e, s);
-        } else throw new DoubleDeclaration();
+        } else throw new DoubleDeclaration("Double déclaration");
     }
 
     public int getCptDepl() {

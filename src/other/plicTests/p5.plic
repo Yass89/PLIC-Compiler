@@ -1,6 +1,0 @@
-programme pp {
-    entier x ; tableau [5] t ;
-    entier y ;
-    x := 10 ; y := 9 - x
-    t[y] := 211
-}
