@@ -33,6 +33,10 @@ public class TDS {
         return cptDepl;
     }
 
+    public Symbole identifier(Entree e) {
+        return this.tableSymboles.get(e);
+    }
+
     public Map<Entree, Symbole> getTableSymboles() {
         return tableSymboles;
     }
