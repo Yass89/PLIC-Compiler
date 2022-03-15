@@ -1,8 +1,6 @@
 package plic.tests;
-
 import plic.Consts;
 import plic.analyse.AnalyseurLexical;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
