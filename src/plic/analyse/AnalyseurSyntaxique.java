@@ -1,6 +1,11 @@
 package plic.analyse;
 import plic.Consts;
+import plic.exceptions.DoubleDeclaration;
 import plic.exceptions.ErreurSyntaxique;
+import plic.repint.Entree;
+import plic.repint.Symbole;
+import plic.repint.TDS;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -32,7 +37,7 @@ public class AnalyseurSyntaxique {
      * Analyse syntaxique globale d'un fichier .plic
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    public void analyse() throws ErreurSyntaxique {
+    public void analyse() throws ErreurSyntaxique, DoubleDeclaration {
 
         // L'untite lexicale courrante est initialisee
         this.uniteCourante = this.analyseurLexical.next();
@@ -48,7 +53,7 @@ public class AnalyseurSyntaxique {
      * Analyse lexicale du programme plic
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseProg() throws ErreurSyntaxique {
+    private void analyseProg() throws ErreurSyntaxique, DoubleDeclaration {
         // Regarder si le premier mot est bien "programme"
         if (!this.uniteCourante.equals(Consts.PROG_START)) throw new ErreurSyntaxique("Programme attendu");
         // Passer au mot suivant (idf en temps normal)
@@ -78,7 +83,7 @@ public class AnalyseurSyntaxique {
      * Analyser l'intérieur d'un bloc (moceau de texte entre { et })
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseBloc() throws ErreurSyntaxique {
+    private void analyseBloc() throws ErreurSyntaxique, DoubleDeclaration {
         this.analyseTerminale(Consts.BLOC_OPEN);
         // Iterer sur analyseDeclaration et analyseInstruction tant qu'on est dans un bloc
         while (!this.uniteCourante.equals(Consts.BLOC_CLOSE)) {
@@ -132,8 +137,9 @@ public class AnalyseurSyntaxique {
      * Analyser les declarations
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseDeclaration() throws ErreurSyntaxique {
+    private void analyseDeclaration() throws ErreurSyntaxique, DoubleDeclaration {
 
+        Symbole symbole = new Symbole(this.uniteCourante);
         // Regarder que le type de la declaration est valide
         analyseTerminale(Consts.TYPE);
 
@@ -141,10 +147,13 @@ public class AnalyseurSyntaxique {
         if(!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");
         }
+        Entree entry = new Entree(this.uniteCourante);
         this.uniteCourante = this.analyseurLexical.next();
 
         // Verifier que la fin de la declaration est bien un ;
         analyseTerminale(Consts.SEPARATEUR);
+
+        TDS.getInstance().ajouter(entry, symbole);
     }
 
     /**
