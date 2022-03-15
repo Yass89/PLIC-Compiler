@@ -2,9 +2,7 @@ package plic.analyse;
 import plic.Consts;
 import plic.exceptions.DoubleDeclaration;
 import plic.exceptions.ErreurSyntaxique;
-import plic.repint.Entree;
-import plic.repint.Symbole;
-import plic.repint.TDS;
+import plic.repint.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,7 +15,7 @@ public class AnalyseurSyntaxique {
     /**
      * Analyseur lexical
      */
-    private AnalyseurLexical analyseurLexical;
+    private final AnalyseurLexical analyseurLexical;
 
     /**
      * Unite lexicale courrante
@@ -37,23 +35,25 @@ public class AnalyseurSyntaxique {
      * Analyse syntaxique globale d'un fichier .plic
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    public void analyse() throws ErreurSyntaxique, DoubleDeclaration {
+    public Bloc analyse() throws ErreurSyntaxique, DoubleDeclaration {
 
         // L'untite lexicale courrante est initialisee
         this.uniteCourante = this.analyseurLexical.next();
 
         // Analyser lexicalement le programme
-        this.analyseProg();
+        Bloc bloc = this.analyseProg();
 
         // Verifier que la fin du .plic est bien EOF
         if (!this.uniteCourante.equals(Consts.EOF)) throw new ErreurSyntaxique("EOF Attendu");
+
+        return bloc;
     }
 
     /**
      * Analyse lexicale du programme plic
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseProg() throws ErreurSyntaxique, DoubleDeclaration {
+    private Bloc analyseProg() throws ErreurSyntaxique, DoubleDeclaration {
         // Regarder si le premier mot est bien "programme"
         if (!this.uniteCourante.equals(Consts.PROG_START)) throw new ErreurSyntaxique("Programme attendu");
         // Passer au mot suivant (idf en temps normal)
@@ -64,7 +64,7 @@ public class AnalyseurSyntaxique {
         }
         // Passage dans le bloc principal ( "{" )
         this.uniteCourante = this.analyseurLexical.next();
-        this.analyseBloc();
+        return this.analyseBloc();
     }
 
     /**
@@ -83,7 +83,9 @@ public class AnalyseurSyntaxique {
      * Analyser l'intérieur d'un bloc (moceau de texte entre { et })
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseBloc() throws ErreurSyntaxique, DoubleDeclaration {
+    private Bloc analyseBloc() throws ErreurSyntaxique, DoubleDeclaration {
+
+        Bloc bloc = new Bloc();
         this.analyseTerminale(Consts.BLOC_OPEN);
         // Iterer sur analyseDeclaration et analyseInstruction tant qu'on est dans un bloc
         while (!this.uniteCourante.equals(Consts.BLOC_CLOSE)) {
@@ -91,46 +93,49 @@ public class AnalyseurSyntaxique {
             // Verifier si il s'agit d'une declaration ou d'une instruction
             if (uniteCourante.equals("entier")) {
                 analyseDeclaration();
-            } else analyseInstruction();
+            } else bloc.ajouter(analyseInstruction());
         }
 
         // Verifier qu'une fois en dehors de la boucle, il s'agit de la fin du bloc
         this.analyseTerminale(Consts.BLOC_CLOSE);
+
+        return bloc;
     }
 
     /**
      * Analyser si l'unite lexicale courrante est une instruction
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseInstruction() throws ErreurSyntaxique {
+    private Instruction analyseInstruction() throws ErreurSyntaxique {
 
+        Instruction instruction;
         // Verifier que l'unite lexicale est valide et qu'il ne s'agit pas du mot clef ecrire
         if (estIdf() && !this.uniteCourante.equals(Consts.PRINT)) {
-            analyseAffectation();
+            instruction = analyseAffectation();
+
         } else {
-            analyseEcrire();
+            instruction = analyseEcrire();
         }
+        return instruction;
     }
 
     /**
      * Analyser si le l'unite lexicale courrante est une instruction ecrire
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseEcrire() throws ErreurSyntaxique {
-
+    private Ecrire analyseEcrire() throws ErreurSyntaxique {
         // Regarder si l'UL est bien un "ecrire"
         analyseTerminale(Consts.PRINT);
 
-        // Regarder le cas où l'UL n'est pas possible a ecrire
-        if(!this.estConstanteEntiere()) {
-            if (!estIdf()) {
-                throw new ErreurSyntaxique("Ce n'est pas une constante entiere ou un Idf");
-            }
-        }
-        this.uniteCourante = this.analyseurLexical.next();
+        // Analyser l'expression
+        Expression e = analyseExpression();
+
+        Ecrire ecrire = new Ecrire(e);
 
         // Verifier que l'UL est bien un ;
         analyseTerminale(Consts.SEPARATEUR);
+
+        return ecrire;
     }
 
     /**
@@ -160,24 +165,24 @@ public class AnalyseurSyntaxique {
      * Analyser les affectations
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseAffectation() throws ErreurSyntaxique {
+    private Affectation analyseAffectation() throws ErreurSyntaxique {
 
+        Idf idf = new Idf(this.uniteCourante);
         // Analyse qu'il s'agit d'un acces
         analyseAcces();
 
         // Regarder que l'UL est un :=
         analyseTerminale(Consts.AFFECTATION);
 
-        // Verifier qu'il s'agit d'une contante int ou d'un idf
-        if(!this.estIdf()) {
-            if(!this.estConstanteEntiere()) {
-                throw new ErreurSyntaxique("Idf attendu");
-            }
-        }
-        this.uniteCourante = this.analyseurLexical.next();
+        // Analyseer qu'il s'agit d'une expression
+        Expression e = analyseExpression();
+
+        Affectation affectation = new Affectation(e, idf);
 
         // Verifier que l'UL est une ;
         analyseTerminale(Consts.SEPARATEUR);
+
+        return affectation;
     }
 
     /**
@@ -196,7 +201,10 @@ public class AnalyseurSyntaxique {
      * Analyser une expression
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseExpression() throws ErreurSyntaxique {
+    private Expression analyseExpression() throws ErreurSyntaxique {
+
+
+        Expression expression;
 
         // Verifier que l'UL est un Idf
         if(!this.estIdf()) {
@@ -208,17 +216,27 @@ public class AnalyseurSyntaxique {
         analyseTerminale(Consts.AFFECTATION);
 
         // Verifier que l'UL est une constante entiere
-        if(!this.estConstanteEntiere()) {
-            throw new ErreurSyntaxique("Ce n'est pas une constante entiere");
+        if(this.pasConstanteEntiere() && !this.estIdf()) {
+            throw new ErreurSyntaxique("Ce n'est pas une constante entiere ou un idf");
         }
+
+        if (estIdf() && !this.uniteCourante.equals(Consts.PRINT)) {
+            expression = new Idf(this.uniteCourante);
+
+        } else {
+            expression = new Nombre();
+        }
+
         this.uniteCourante = this.analyseurLexical.next();
+
+        return expression;
     }
 
     /**
      * Verifier qu'un mot est une constante entiere (Int)
      * @return l'unite lexicale courrante est un entier
      */
-    private boolean estConstanteEntiere() {
+    private boolean pasConstanteEntiere() {
         try {
 
             // Essayer de parse en Int l'unite courrante
@@ -226,9 +244,9 @@ public class AnalyseurSyntaxique {
         } catch(NumberFormatException | NullPointerException e) {
 
             // l'UL n'est pas un entier
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**

@@ -5,6 +5,7 @@ import plic.analyse.AnalyseurSyntaxique;
 import plic.exceptions.DoubleDeclaration;
 import plic.exceptions.ErreurFile;
 import plic.exceptions.ErreurSyntaxique;
+import plic.repint.Bloc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,6 +27,7 @@ public class Plic {
         if (file.isDirectory()) throw new ErreurFile("Repertoire renseigné");
         if (file.isHidden()) throw new ErreurFile("Le fichier est caché");
         AnalyseurSyntaxique analyseurSyntaxique = new AnalyseurSyntaxique(file);
-        analyseurSyntaxique.analyse();
+        Bloc bloc = analyseurSyntaxique.analyse();
+        System.out.println(bloc);
     }
 }
