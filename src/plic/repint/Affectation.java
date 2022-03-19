@@ -9,4 +9,12 @@ public class Affectation extends Instruction {
         this.e = e;
         this.idf = idf;
     }
+
+    @Override
+    public String toString() {
+        return "Affectation{" +
+                "e=" + e +
+                ", idf=" + idf +
+                '}';
+    }
 }

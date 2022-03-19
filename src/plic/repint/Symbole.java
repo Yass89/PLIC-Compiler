@@ -33,6 +33,14 @@ public class Symbole {
     }
 
     @Override
+    public String toString() {
+        return "Symbole{" +
+                "type='" + type + '\'' +
+                ", deplacement=" + deplacement +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

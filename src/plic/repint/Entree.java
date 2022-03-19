@@ -19,6 +19,13 @@ public class Entree {
     }
 
     @Override
+    public String toString() {
+        return "Entree{" +
+                "idf='" + idf + '\'' +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

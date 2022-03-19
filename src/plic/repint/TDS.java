@@ -40,4 +40,12 @@ public class TDS {
     public Map<Entree, Symbole> getTableSymboles() {
         return tableSymboles;
     }
+
+    @Override
+    public String toString() {
+        return "TDS{" +
+                "cptDepl=" + cptDepl +
+                ", tableSymboles=" + tableSymboles +
+                '}';
+    }
 }

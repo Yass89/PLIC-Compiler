@@ -7,4 +7,11 @@ public class Ecrire extends Instruction{
     public Ecrire(Expression e) {
         this.e = e;
     }
+
+    @Override
+    public String toString() {
+        return "Ecrire{" +
+                "e=" + e +
+                '}';
+    }
 }
