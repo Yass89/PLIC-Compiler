@@ -15,4 +15,12 @@ public class Bloc {
     public void ajouter(Instruction i) {
         instructions.add(i);
     }
+
+    public void verifier() {
+        for (Instruction instruction : instructions) {
+            if (instruction instanceof Affectation) {
+                instruction.verifier();
+            } else instruction.verifier();
+        }
+    }
 }

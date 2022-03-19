@@ -17,4 +17,9 @@ public class Affectation extends Instruction {
                 ", idf=" + idf +
                 '}';
     }
+
+    @Override
+    public void verifier() {
+
+    }
 }

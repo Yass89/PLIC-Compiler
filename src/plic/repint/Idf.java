@@ -13,4 +13,9 @@ public class Idf extends Expression {
                 "nom='" + nom + '\'' +
                 '}';
     }
+
+    @Override
+    public void verifier() {
+
+    }
 }

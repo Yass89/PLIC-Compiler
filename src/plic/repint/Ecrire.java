@@ -14,4 +14,9 @@ public class Ecrire extends Instruction{
                 "e=" + e +
                 '}';
     }
+
+    @Override
+    public void verifier() {
+
+    }
 }

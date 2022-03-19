@@ -28,6 +28,7 @@ public class Plic {
         if (file.isHidden()) throw new ErreurFile("Le fichier est caché");
         AnalyseurSyntaxique analyseurSyntaxique = new AnalyseurSyntaxique(file);
         Bloc bloc = analyseurSyntaxique.analyse();
+        bloc.verifier();
         System.out.println(bloc);
     }
 }
