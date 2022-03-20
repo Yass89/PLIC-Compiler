@@ -21,4 +21,9 @@ public class Idf extends Expression {
         Map<Entree, Symbole> tableSymbole = TDS.getInstance().getTableSymboles();
         if (!tableSymbole.containsKey(new Entree(this.nom))) throw new ErreurSemantique("Idf non declare");
     }
+
+    @Override
+    public String toMips() {
+        return null;
+    }
 }

@@ -23,4 +23,9 @@ public class Nombre extends Expression{
         Map<Entree, Symbole> tableSymbole = TDS.getInstance().getTableSymboles();
         if (!tableSymbole.containsValue(new Symbole("entier"))) throw new ErreurSemantique("Nombre invalide");
     }
+
+    @Override
+    public String toMips() {
+        return null;
+    }
 }

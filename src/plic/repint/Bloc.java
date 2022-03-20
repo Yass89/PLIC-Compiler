@@ -23,4 +23,12 @@ public class Bloc {
             instruction.verifier();
         }
     }
+
+    public String toMips() {
+        StringBuilder res = new StringBuilder();
+        for (Instruction instruction : instructions) {
+            res.append(instruction.toMips());
+        }
+        return res.toString();
+    }
 }

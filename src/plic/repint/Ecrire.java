@@ -21,4 +21,9 @@ public class Ecrire extends Instruction{
     public void verifier() throws ErreurSemantique {
         e.verifier();
     }
+
+    @Override
+    public String toMips() {
+        return e.toMips();
+    }
 }

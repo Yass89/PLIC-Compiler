@@ -30,6 +30,7 @@ public class Plic {
         AnalyseurSyntaxique analyseurSyntaxique = new AnalyseurSyntaxique(file);
         Bloc bloc = analyseurSyntaxique.analyse();
         bloc.verifier();
-        System.out.println(bloc);
+        String code = bloc.toMips() ;
+        System.out.println(code) ;
     }
 }

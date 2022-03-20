@@ -25,4 +25,9 @@ public class Affectation extends Instruction {
         idf.verifier();
         e.verifier();
     }
+
+    @Override
+    public String toMips() {
+        return null;
+    }
 }
