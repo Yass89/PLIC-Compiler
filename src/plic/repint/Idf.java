@@ -1,4 +1,6 @@
 package plic.repint;
+import plic.exceptions.ErreurSemantique;
+import java.util.Map;
 
 public class Idf extends Expression {
     private String nom;
@@ -15,7 +17,8 @@ public class Idf extends Expression {
     }
 
     @Override
-    public void verifier() {
-
+    public void verifier() throws ErreurSemantique {
+        Map<Entree, Symbole> tableSymbole = TDS.getInstance().getTableSymboles();
+        if (!tableSymbole.containsKey(new Entree(this.nom))) throw new ErreurSemantique("Idf non declare");
     }
 }

@@ -1,5 +1,7 @@
 package plic.repint;
 
+import plic.exceptions.ErreurSemantique;
+
 public class Affectation extends Instruction {
 
     Expression e;
@@ -19,7 +21,8 @@ public class Affectation extends Instruction {
     }
 
     @Override
-    public void verifier() {
-
+    public void verifier() throws ErreurSemantique {
+        idf.verifier();
+        e.verifier();
     }
 }
