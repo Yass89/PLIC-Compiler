@@ -2,32 +2,75 @@ package plic.repint;
 
 import java.util.Objects;
 
+/**
+ * @author unshade
+ */
 public class Symbole {
 
+    /**
+     * Type du symbole
+     */
     private String type;
+
+    /**
+     * Deplacement dans la pile
+     */
     private int deplacement;
 
+    /**
+     * Constructeur symbole -- unused -- test
+     *
+     * @param type        type
+     * @param deplacement deplacement
+     */
     public Symbole(String type, int deplacement) {
         this.type = type;
         this.deplacement = deplacement;
     }
 
+
+    /**
+     * Constructeur de symbole
+     *
+     * @param type type du symbole (entier...)
+     */
     public Symbole(String type) {
         this.type = type;
     }
 
+
+    /**
+     * Getter type
+     *
+     * @return type
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Setter type
+     *
+     * @param type type
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * getter deplacement
+     *
+     * @return deplacement
+     */
     public int getDeplacement() {
         return deplacement;
     }
 
+    /**
+     * Setter deplacement
+     *
+     * @param deplacement deplacement
+     */
     public void setDeplacement(int deplacement) {
         this.deplacement = deplacement;
     }

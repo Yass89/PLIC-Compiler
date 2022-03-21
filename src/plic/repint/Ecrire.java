@@ -2,10 +2,21 @@ package plic.repint;
 
 import plic.exceptions.ErreurSemantique;
 
+/**
+ * @author unshade
+ */
 public class Ecrire extends Instruction {
 
+    /**
+     * Expression a ecrire
+     */
     Expression e;
 
+    /**
+     * Constructeur
+     *
+     * @param e expression
+     */
     public Ecrire(Expression e) {
         this.e = e;
     }
@@ -17,11 +28,22 @@ public class Ecrire extends Instruction {
                 '}';
     }
 
+    /**
+     * Verifier que l'expression a ecrire est semantiquement correcte
+     *
+     * @throws ErreurSemantique erreur semantique
+     */
     @Override
     public void verifier() throws ErreurSemantique {
         e.verifier();
     }
 
+
+    /**
+     * Permet de convertir l'instruction d'ecriture en assembleur mips
+     *
+     * @return le code mips
+     */
     @Override
     public String toMips() {
         StringBuilder mips = new StringBuilder();

@@ -1,4 +1,5 @@
 package plic.analyse;
+
 import plic.Consts;
 import plic.exceptions.DoubleDeclaration;
 import plic.exceptions.ErreurSyntaxique;
@@ -24,6 +25,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Constructeur d'analyseur Syntaxique, utilise un analyseur lexical sur un fichier
+     *
      * @param file Fichier .plic a analyser
      * @throws FileNotFoundException Erreur si le fichier n'est pas trouve
      */
@@ -33,6 +35,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Analyse syntaxique globale d'un fichier .plic
+     *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     public Bloc analyse() throws ErreurSyntaxique, DoubleDeclaration {
@@ -51,6 +54,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Analyse lexicale du programme plic
+     *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Bloc analyseProg() throws ErreurSyntaxique, DoubleDeclaration {
@@ -59,7 +63,7 @@ public class AnalyseurSyntaxique {
         // Passer au mot suivant (idf en temps normal)
         this.uniteCourante = this.analyseurLexical.next();
         // Verifier que ce mot est bien un idf
-        if(!this.estIdf()) {
+        if (!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu : nom du programme");
         }
         // Passage dans le bloc principal ( "{" )
@@ -69,6 +73,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Permet de verifier que l'unite courrante correspond a un mot clef precis
+     *
      * @param terminal mot clef
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme (terminal innatendu)
      */
@@ -81,6 +86,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Analyser l'intérieur d'un bloc (moceau de texte entre { et })
+     *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Bloc analyseBloc() throws ErreurSyntaxique, DoubleDeclaration {
@@ -105,6 +111,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Analyser si l'unite lexicale courrante est une instruction
+     *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Instruction analyseInstruction() throws ErreurSyntaxique {
@@ -122,12 +129,13 @@ public class AnalyseurSyntaxique {
 
     /**
      * Analyser si le l'unite lexicale courrante est une instruction ecrire
+     *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Ecrire analyseEcrire() throws ErreurSyntaxique {
 
 
-       // Analyser l'expression
+        // Analyser l'expression
         Expression e = analyseExpression();
 
         Ecrire ecrire = new Ecrire(e);
@@ -140,6 +148,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Analyser les declarations
+     *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private void analyseDeclaration() throws ErreurSyntaxique, DoubleDeclaration {
@@ -149,7 +158,7 @@ public class AnalyseurSyntaxique {
         analyseTerminale(Consts.TYPE);
 
         // Verifier qu'il s'agit d'un IDF
-        if(!this.estIdf()) {
+        if (!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");
         }
         Entree entry = new Entree(this.uniteCourante);
@@ -163,6 +172,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Analyser les affectations
+     *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Affectation analyseAffectation() throws ErreurSyntaxique {
@@ -184,11 +194,12 @@ public class AnalyseurSyntaxique {
 
     /**
      * Analyser les acces
+     *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private void analyseAcces() throws ErreurSyntaxique {
         // Verifier qu'il s'agit d'un Idf
-        if(!this.estIdf()) {
+        if (!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");
         }
         this.uniteCourante = this.analyseurLexical.next();
@@ -196,6 +207,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Analyser une expression
+     *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Expression analyseExpression() throws ErreurSyntaxique {
@@ -222,6 +234,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Verifier qu'un mot est une constante entiere (Int)
+     *
      * @return l'unite lexicale courrante est un entier
      */
     private boolean pasConstanteEntiere() {
@@ -229,7 +242,7 @@ public class AnalyseurSyntaxique {
 
             // Essayer de parse en Int l'unite courrante
             Integer.parseInt(this.uniteCourante);
-        } catch(NumberFormatException | NullPointerException e) {
+        } catch (NumberFormatException | NullPointerException e) {
 
             // l'UL n'est pas un entier
             return true;
@@ -239,6 +252,7 @@ public class AnalyseurSyntaxique {
 
     /**
      * Verifier qu'un Idf est valide
+     *
      * @return l'unite lexicale courrante est un Idf
      */
     private boolean estIdf() {

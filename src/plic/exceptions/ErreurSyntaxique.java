@@ -1,7 +1,16 @@
 package plic.exceptions;
 
+/**
+ * @author unshade
+ */
 public class ErreurSyntaxique extends Throwable {
-    public ErreurSyntaxique(String attendu) {
-        super("ERREUR: (Syntaxique) " + attendu);
+
+    /**
+     * Constructeur des erreurs syntaxiques
+     *
+     * @param message message a passer en cas d'erreur
+     */
+    public ErreurSyntaxique(String message) {
+        super("ERREUR: (Syntaxique) " + message);
     }
 }

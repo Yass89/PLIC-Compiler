@@ -1,11 +1,25 @@
 package plic.repint;
+
 import plic.exceptions.ErreurSemantique;
+
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * @author unshade
+ */
 public class Idf extends Expression {
+
+    /**
+     * Nom de l'idf
+     */
     private final String nom;
 
+    /**
+     * Constructeur d'idf
+     *
+     * @param nom
+     */
     public Idf(String nom) {
         this.nom = nom;
     }
@@ -17,10 +31,20 @@ public class Idf extends Expression {
                 '}';
     }
 
+    /**
+     * getter nom
+     *
+     * @return nom idf
+     */
     public String getNom() {
         return nom;
     }
 
+    /**
+     * Verifier que l'idf est semantiquement correct
+     *
+     * @throws ErreurSemantique err semantique
+     */
     @Override
     public void verifier() throws ErreurSemantique {
         Map<Entree, Symbole> tableSymbole = TDS.getInstance().getTableSymboles();

@@ -2,11 +2,27 @@ package plic.repint;
 
 import plic.exceptions.ErreurSemantique;
 
+/**
+ * @author unshade
+ */
 public class Affectation extends Instruction {
 
+    /**
+     * Expression
+     */
     Expression e;
+
+    /**
+     * Idf
+     */
     Idf idf;
 
+    /**
+     * Constructeur d'affectation
+     *
+     * @param e   expression
+     * @param idf son idf
+     */
     public Affectation(Expression e, Idf idf) {
         this.e = e;
         this.idf = idf;
@@ -20,14 +36,26 @@ public class Affectation extends Instruction {
                 '}';
     }
 
+    /**
+     * Verifier la semantique de l'affectation
+     *
+     * @throws ErreurSemantique erreur semantique dans l'affectation'
+     */
     @Override
     public void verifier() throws ErreurSemantique {
         idf.verifier();
         e.verifier();
     }
 
+    /**
+     * Convertir une affectation plic en mips
+     *
+     * @return le code mips
+     */
     @Override
     public String toMips() {
+
+        // Recuperer l'entree et le symbole
         Entree entree = new Entree(idf.getNom());
         Symbole symbole = TDS.getInstance().identifier(entree);
         StringBuilder mips = new StringBuilder();

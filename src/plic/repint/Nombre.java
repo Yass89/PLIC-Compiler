@@ -4,9 +4,21 @@ import plic.exceptions.ErreurSemantique;
 
 import java.util.Map;
 
-public class Nombre extends Expression{
+/**
+ * @author unshade
+ */
+public class Nombre extends Expression {
+
+    /**
+     * Valeur du nombre
+     */
     private int val;
 
+    /**
+     * Constructeur de valeur
+     *
+     * @param val valeur
+     */
     public Nombre(int val) {
         this.val = val;
     }
@@ -18,6 +30,11 @@ public class Nombre extends Expression{
                 '}';
     }
 
+    /**
+     * Verifier que le nombre est semantquement correct
+     *
+     * @throws ErreurSemantique err semantique
+     */
     @Override
     public void verifier() throws ErreurSemantique {
         Map<Entree, Symbole> tableSymbole = TDS.getInstance().getTableSymboles();

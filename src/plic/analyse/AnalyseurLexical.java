@@ -6,14 +6,31 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+/**
+ * @author unshade
+ */
 public class AnalyseurLexical {
 
+    /**
+     * Scanneur
+     */
     private final Scanner scanner;
 
+    /**
+     * Constructeur de l'analyseur lexical
+     *
+     * @param file fichier a analyser
+     * @throws FileNotFoundException cas où le fichier est non trouvé
+     */
     public AnalyseurLexical(File file) throws FileNotFoundException {
         this.scanner = new Scanner(file);
     }
 
+    /**
+     * Passer à l'unite lexicale suivante dans le fichier
+     *
+     * @return l'unite lexicale suivante
+     */
     public String next() {
         String uniteLexicale = "";
         if (this.scanner.hasNext()) {
