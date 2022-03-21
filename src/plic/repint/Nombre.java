@@ -25,7 +25,8 @@ public class Nombre extends Expression{
     }
 
     @Override
-    public String toMips() {
-        return null;
+    public Object getVal() {
+        return val;
     }
+
 }

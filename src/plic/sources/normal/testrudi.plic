@@ -1,3 +1,5 @@
-programme rudi {
+programme plic {
+    entier k ;
+    k := 7 ;
     ecrire k ;
 }

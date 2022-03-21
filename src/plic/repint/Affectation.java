@@ -28,6 +28,15 @@ public class Affectation extends Instruction {
 
     @Override
     public String toMips() {
-        return null;
+        Entree entree = new Entree(idf.getNom());
+        Symbole symbole = TDS.getInstance().identifier(entree);
+        StringBuilder mips = new StringBuilder();
+        if (e instanceof Idf) {
+            Entree entree2 = new Entree((String) e.getVal());
+            Symbole s2 = TDS.getInstance().identifier(entree2);
+            mips.append("lw $v0,").append(s2.getDeplacement()).append("($sp)").append("\n").append("sw $v0,").append(symbole.getDeplacement()).append("($sp)").append("\n");
+        } else
+            mips.append("li $v0,").append(e.getVal()).append("\n").append("sw $v0,").append(symbole.getDeplacement()).append("($sp)\n");
+        return mips.toString();
     }
 }

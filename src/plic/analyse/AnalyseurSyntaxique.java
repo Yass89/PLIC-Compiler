@@ -125,6 +125,8 @@ public class AnalyseurSyntaxique {
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Ecrire analyseEcrire() throws ErreurSyntaxique {
+
+
        // Analyser l'expression
         Expression e = analyseExpression();
 
@@ -204,7 +206,7 @@ public class AnalyseurSyntaxique {
         // Verifier que l'UL est un := si c'est dans le cas non ecrire
         if (!this.uniteCourante.equals(Consts.PRINT)) {
             analyseTerminale(Consts.AFFECTATION);
-        } else this.analyseurLexical.next();
+        } else this.uniteCourante = this.analyseurLexical.next();
 
         if (pasConstanteEntiere()) {
             expression = new Idf(this.uniteCourante);
