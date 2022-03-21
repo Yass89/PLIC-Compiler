@@ -13,7 +13,7 @@ public class TDS {
     private static final TDS instance = new TDS();
 
     private TDS() {
-        cptDepl = 4;
+        cptDepl = 0;
         tableSymboles = new HashMap<>();
     }
 
@@ -23,9 +23,9 @@ public class TDS {
 
     public void ajouter(Entree e, Symbole s) throws DoubleDeclaration {
         if (!tableSymboles.containsKey(e)) {
-            cptDepl -= 4;
             s.setDeplacement(cptDepl);
             this.tableSymboles.put(e, s);
+            cptDepl -= 4;
         } else throw new DoubleDeclaration("Double déclaration");
     }
 

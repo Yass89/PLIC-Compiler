@@ -28,11 +28,11 @@ public class Bloc {
         StringBuilder res = new StringBuilder();
         res.append(
                 ".data" + "\n" +
-                "newLine : .ascii \"\\n\"\n" + "\n" +
+                "newLine : .ascii \"\\n\"\n" +
                 ".text" + "\n" +
                 "main :" + "\n"
         );
-        res.append("add $sp,$sp,").append(TDS.getInstance().getCptDepl());
+        res.append("add $sp,$sp,").append(TDS.getInstance().getCptDepl()).append("\n");
         for (Instruction instruction : instructions) {
             res.append(instruction.toMips());
         }
