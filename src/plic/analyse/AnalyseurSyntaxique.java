@@ -189,12 +189,12 @@ public class AnalyseurSyntaxique {
 
         Idf idf = new Idf(this.uniteCourante);
         // Analyse qu'il s'agit d'un acces
-        analyseAcces();
+        Acces acces = analyseAcces();
 
         // Analyseer qu'il s'agit d'une expression
         Expression e = analyseExpression();
 
-        Affectation affectation = new Affectation(e, idf);
+        Affectation affectation = new Affectation(e, acces);
 
         // Verifier que l'UL est une ;
         analyseTerminale(Consts.SEPARATEUR);
@@ -207,12 +207,25 @@ public class AnalyseurSyntaxique {
      *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseAcces() throws ErreurSyntaxique {
+    private Acces analyseAcces() throws ErreurSyntaxique {
+        Acces acces;
+        Idf idf = new Idf(this.uniteCourante);
         // Verifier qu'il s'agit d'un Idf
         if (!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");
         }
+        acces = new Acces(idf);
         this.uniteCourante = this.analyseurLexical.next();
+        if (this.uniteCourante.equals(Consts.OUVERTURE_TAB)) {
+            Expression expr = analyseExpression();
+            acces = new AccesTableau(idf, expr);
+
+            if (!this.uniteCourante.equals(Consts.FERMETURE_TAB)) {
+                throw new ErreurSyntaxique("] attendu");
+            }
+            this.uniteCourante = this.analyseurLexical.next();
+        }
+        return acces;
     }
 
     /**
