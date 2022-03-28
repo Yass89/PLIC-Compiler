@@ -18,16 +18,9 @@ public class Symbole {
     private int deplacement;
 
     /**
-     * Constructeur symbole -- unused -- test
-     *
-     * @param type        type
-     * @param deplacement deplacement
+     * Taille tableau
      */
-    public Symbole(String type, int deplacement) {
-        this.type = type;
-        this.deplacement = deplacement;
-    }
-
+    private int taille;
 
     /**
      * Constructeur de symbole
@@ -55,6 +48,15 @@ public class Symbole {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    /**
+     * Permet de modifier la taille du symbole
+     *
+     * @param taille taille
+     */
+    public void setTaille(int taille) {
+        this.taille = taille;
     }
 
     /**

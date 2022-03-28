@@ -153,17 +153,27 @@ public class AnalyseurSyntaxique {
      */
     private void analyseDeclaration() throws ErreurSyntaxique, DoubleDeclaration {
 
-        Symbole symbole = new Symbole(this.uniteCourante);
-        // Regarder que le type de la declaration est valide
-        analyseTerminale(Consts.TYPE);
-
-        // Verifier qu'il s'agit d'un IDF
-        if (!this.estIdf()) {
-            throw new ErreurSyntaxique("Idf attendu");
+        Symbole symbole;
+        Entree entry;
+        if (this.uniteCourante.matches(Consts.ENTIER)) {
+            symbole = new Symbole(this.uniteCourante);
+            analyseTerminale(Consts.ENTIER);
+            // Verifier qu'il s'agit d'un IDF
+            if (!this.estIdf()) {
+                throw new ErreurSyntaxique("Idf attendu");
+            }
+            entry = new Entree(this.uniteCourante);
+            this.uniteCourante = this.analyseurLexical.next();
+        } else {
+            symbole = new Symbole(this.uniteCourante);
+            analyseTerminale(Consts.TABLEAU);
+            analyseTerminale(Consts.OUVERTURE_TAB);
+            if (!pasConstanteEntiere()) {
+                entry = new Entree(this.uniteCourante);
+                analyseTerminale(Consts.REGEX_IDF);
+            } else throw new ErreurSyntaxique("Declarer le tableau avec un nombre");
+            analyseTerminale(Consts.FERMETURE_TAB);
         }
-        Entree entry = new Entree(this.uniteCourante);
-        this.uniteCourante = this.analyseurLexical.next();
-
         // Verifier que la fin de la declaration est bien un ;
         analyseTerminale(Consts.SEPARATEUR);
 
