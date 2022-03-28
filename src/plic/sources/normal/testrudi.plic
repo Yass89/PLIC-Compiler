@@ -1,5 +1,5 @@
-programme plic {
-    entier k ;
-    k := 7 ;
-    ecrire k ;
+programme test {
+    entier n ;
+    n := 5 ;
+    ecrire n ;
 }

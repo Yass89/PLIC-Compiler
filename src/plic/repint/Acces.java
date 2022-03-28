@@ -17,10 +17,14 @@ public class Acces extends Expression {
 
     @Override
     public Object getVal() {
-        return null;
+        return idf;
     }
 
     public String toMIPS() {
         return " ";
+    }
+
+    public Idf getIdf() {
+        return idf;
     }
 }

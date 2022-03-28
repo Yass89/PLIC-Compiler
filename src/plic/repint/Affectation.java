@@ -21,7 +21,7 @@ public class Affectation extends Instruction {
      * Constructeur d'affectation
      *
      * @param e   expression
-     * @param idf son idf
+     * @param acces son idf
      */
     public Affectation(Expression e, Acces acces) {
         this.e = e;
@@ -56,7 +56,7 @@ public class Affectation extends Instruction {
     public String toMips() {
 
         // Recuperer l'entree et le symbole
-        Entree entree = new Entree("TODO");
+        Entree entree = new Entree(acces.getIdf().getNom());
         Symbole symbole = TDS.getInstance().identifier(entree);
         StringBuilder mips = new StringBuilder();
         if (e instanceof Idf) {
