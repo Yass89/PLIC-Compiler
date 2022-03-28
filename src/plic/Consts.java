@@ -1,8 +1,5 @@
 package plic;
 
-/**
- * @author unshade
- */
 public class Consts {
     public static final String ENTIER = "entier";
     public static final String EOF = "EOF";
