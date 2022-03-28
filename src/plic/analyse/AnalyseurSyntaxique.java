@@ -98,7 +98,7 @@ public class AnalyseurSyntaxique {
         // Iterer sur analyseDeclaration et analyseInstruction tant qu'on est dans un bloc
         while (!this.uniteCourante.equals(Consts.BLOC_CLOSE)) {
             // Verifier si il s'agit d'une declaration ou d'une instruction
-            if (uniteCourante.equals("entier") || uniteCourante.equals("tableau")) {
+            if (uniteCourante.equals("entier")) {
                 analyseDeclaration();
             } else bloc.ajouter(analyseInstruction());
         }
@@ -120,6 +120,7 @@ public class AnalyseurSyntaxique {
         // Verifier que l'unite lexicale est valide et qu'il ne s'agit pas du mot clef ecrire
         if (estIdf() && !this.uniteCourante.equals(Consts.PRINT)) {
             instruction = analyseAffectation();
+
         } else {
             instruction = analyseEcrire();
         }
@@ -152,31 +153,17 @@ public class AnalyseurSyntaxique {
      */
     private void analyseDeclaration() throws ErreurSyntaxique, DoubleDeclaration {
 
-        Symbole symbole;
-        Entree entry;
-        if (this.uniteCourante.matches(Consts.ENTIER)) {
-            symbole = new Symbole(this.uniteCourante);
-            analyseTerminale(Consts.ENTIER);
-            // Verifier qu'il s'agit d'un IDF
-            if (!this.estIdf()) {
-                throw new ErreurSyntaxique("Idf attendu");
-            }
-            entry = new Entree(this.uniteCourante);
-            this.uniteCourante = this.analyseurLexical.next();
-        } else {
-            symbole = new Symbole(this.uniteCourante);
-            analyseTerminale(Consts.TABLEAU);
-            analyseTerminale(Consts.OUVERTURE_TAB);
-            if (!pasConstanteEntiere()) {
-                this.uniteCourante = this.analyseurLexical.next();
-            } else throw new ErreurSyntaxique("Declarer le tableau avec un nombre");
-            analyseTerminale(Consts.FERMETURE_TAB);
-            if (!this.estIdf()) {
-                throw new ErreurSyntaxique("Idf attendu");
-            }
-            entry = new Entree(this.uniteCourante);
-            this.uniteCourante = this.analyseurLexical.next();
+        Symbole symbole = new Symbole(this.uniteCourante);
+        // Regarder que le type de la declaration est valide
+        analyseTerminale(Consts.TYPE);
+
+        // Verifier qu'il s'agit d'un IDF
+        if (!this.estIdf()) {
+            throw new ErreurSyntaxique("Idf attendu");
         }
+        Entree entry = new Entree(this.uniteCourante);
+        this.uniteCourante = this.analyseurLexical.next();
+
         // Verifier que la fin de la declaration est bien un ;
         analyseTerminale(Consts.SEPARATEUR);
 
@@ -190,15 +177,14 @@ public class AnalyseurSyntaxique {
      */
     private Affectation analyseAffectation() throws ErreurSyntaxique {
 
+        Idf idf = new Idf(this.uniteCourante);
         // Analyse qu'il s'agit d'un acces
-        Acces acces = analyseAcces();
-
-        analyseTerminale(Consts.AFFECTATION);
+        analyseAcces();
 
         // Analyseer qu'il s'agit d'une expression
         Expression e = analyseExpression();
 
-        Affectation affectation = new Affectation(e, acces);
+        Affectation affectation = new Affectation(e, idf);
 
         // Verifier que l'UL est une ;
         analyseTerminale(Consts.SEPARATEUR);
@@ -211,18 +197,12 @@ public class AnalyseurSyntaxique {
      *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private Acces analyseAcces() throws ErreurSyntaxique {
-        Acces acces;
-        Idf idf = new Idf(this.uniteCourante);
-        acces = new Acces(idf);
-        this.uniteCourante = this.analyseurLexical.next();
-        if (this.uniteCourante.equals(Consts.OUVERTURE_TAB)) {
-            this.uniteCourante = this.analyseurLexical.next();
-            Expression expr = analyseExpression();
-            acces = new AccesTableau(idf, expr);
-            analyseTerminale(Consts.FERMETURE_TAB);
+    private void analyseAcces() throws ErreurSyntaxique {
+        // Verifier qu'il s'agit d'un Idf
+        if (!this.estIdf()) {
+            throw new ErreurSyntaxique("Idf attendu");
         }
-        return acces;
+        this.uniteCourante = this.analyseurLexical.next();
     }
 
     /**
@@ -235,8 +215,13 @@ public class AnalyseurSyntaxique {
 
         Expression expression;
 
-        if (pasConstanteEntiere() && !this.uniteCourante.matches(Consts.PRINT)) {
-            expression = analyseAcces();
+        // Verifier que l'UL est un := si c'est dans le cas non ecrire
+        if (!this.uniteCourante.equals(Consts.PRINT)) {
+            analyseTerminale(Consts.AFFECTATION);
+        } else this.uniteCourante = this.analyseurLexical.next();
+
+        if (pasConstanteEntiere()) {
+            expression = new Idf(this.uniteCourante);
 
         } else {
             expression = new Nombre(Integer.parseInt(this.uniteCourante));
@@ -253,7 +238,16 @@ public class AnalyseurSyntaxique {
      * @return l'unite lexicale courrante est un entier
      */
     private boolean pasConstanteEntiere() {
-        return !this.uniteCourante.matches("[0-9]+");
+        try {
+
+            // Essayer de parse en Int l'unite courrante
+            Integer.parseInt(this.uniteCourante);
+        } catch (NumberFormatException | NullPointerException e) {
+
+            // l'UL n'est pas un entier
+            return true;
+        }
+        return false;
     }
 
     /**

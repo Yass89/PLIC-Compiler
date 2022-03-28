@@ -13,26 +13,26 @@ public class Affectation extends Instruction {
     Expression e;
 
     /**
-     * Acces
+     * Idf
      */
-    Acces acces;
+    Idf idf;
 
     /**
      * Constructeur d'affectation
      *
      * @param e   expression
-     * @param acces son idf
+     * @param idf son idf
      */
-    public Affectation(Expression e, Acces acces) {
+    public Affectation(Expression e, Idf idf) {
         this.e = e;
-        this.acces = acces;
+        this.idf = idf;
     }
 
     @Override
     public String toString() {
         return "Affectation{" +
                 "e=" + e +
-                ", idf=" + acces +
+                ", idf=" + idf +
                 '}';
     }
 
@@ -43,7 +43,7 @@ public class Affectation extends Instruction {
      */
     @Override
     public void verifier() throws ErreurSemantique {
-        acces.verifier();
+        idf.verifier();
         e.verifier();
     }
 
@@ -56,7 +56,7 @@ public class Affectation extends Instruction {
     public String toMips() {
 
         // Recuperer l'entree et le symbole
-        Entree entree = new Entree(acces.getIdf().getNom());
+        Entree entree = new Entree(idf.getNom());
         Symbole symbole = TDS.getInstance().identifier(entree);
         StringBuilder mips = new StringBuilder();
         if (e instanceof Idf) {
