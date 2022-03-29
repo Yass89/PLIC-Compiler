@@ -1,6 +1,8 @@
 package plic.repint;
 
-public abstract class Acces extends Expression{
+import plic.exceptions.ErreurSemantique;
+
+public class Acces extends Expression{
 
     private Idf idf;
     private Expression expression;
@@ -27,4 +29,18 @@ public abstract class Acces extends Expression{
     }
 
 
+    @Override
+    public void verifier() throws ErreurSemantique {
+
+    }
+
+    @Override
+    public String toMips() {
+        return null;
+    }
+
+    @Override
+    public Object getVal() {
+        return null;
+    }
 }

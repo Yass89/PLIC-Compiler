@@ -209,11 +209,14 @@ public class AnalyseurSyntaxique {
         if (!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");
         }
+        Idf idf = new Idf(this.uniteCourante);
+        acces = new Acces(idf);
         this.uniteCourante = this.analyseurLexical.next();
 
         if (this.uniteCourante.equals("[")) {
             this.uniteCourante = this.analyseurLexical.next();
             Expression e = analyseExpression();
+            acces = new AccesTableau(idf, e);
             analyseTerminale("]");
         }
 
