@@ -1,6 +1,6 @@
 programme plic {
-    entier k ; entier z ; tableau [ 2 ] f ; entier r ;
-    f [ f [ f [ 5 ] ] ] := 5 ;
+    entier k ; entier z ; tableau [ 2 ] f ; entier r ; tableau [ 2 ] g ;
+    f [ f [ g ] ] := 5 ;
     k := 0 ;
     ecrire k ;
 }

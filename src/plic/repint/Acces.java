@@ -2,7 +2,7 @@ package plic.repint;
 
 import plic.exceptions.ErreurSemantique;
 
-public class Acces extends Expression{
+public class Acces extends Expression {
 
     private Idf idf;
     private Expression expression;
@@ -17,14 +17,17 @@ public class Acces extends Expression{
     }
 
     public String toString() {
-        return ""+idf;
+        return "" + idf;
     }
 
 
     @Override
     public void verifier() throws ErreurSemantique {
+        Symbole s = TDS.getInstance().identifier(new Entree(idf.getNom()));
         idf.verifier();
-        if(expression != null) expression.verifier();
+        if (expression != null) {
+            expression.verifier();
+        }
 
     }
 

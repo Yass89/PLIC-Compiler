@@ -47,6 +47,11 @@ public class Ecrire extends Instruction {
     @Override
     public String toMips() {
         StringBuilder mips = new StringBuilder();
+
+        // Met la valeur de l'expression dans $v0
+        mips.append(e.toMips());
+
+        /*
         if (e instanceof Idf) {
             Entree entree = new Entree((String) e.getVal());
             Symbole symbole = TDS.getInstance().identifier(entree);
@@ -57,6 +62,9 @@ public class Ecrire extends Instruction {
         mips.append("la $a0,newLine\n" +
                 "addi $v0,$0,4\n" +
                 "syscall\n");
+
+         */
         return mips.toString();
+
     }
 }
