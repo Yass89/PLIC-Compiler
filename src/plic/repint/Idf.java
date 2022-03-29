@@ -52,6 +52,14 @@ public class Idf extends Expression {
     }
 
     @Override
+    public String toMips() {
+        Entree e = new Entree(this.nom);
+        Symbole s = TDS.getInstance().identifier(e);
+        return s.getDeplacement()+"($" +
+                "sp)";
+    }
+
+    @Override
     public Object getVal() {
         return nom;
     }

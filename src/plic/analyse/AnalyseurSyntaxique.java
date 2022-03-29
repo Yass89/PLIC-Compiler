@@ -96,12 +96,16 @@ public class AnalyseurSyntaxique {
         // Regarder qu'on commence par {
         this.analyseTerminale(Consts.BLOC_OPEN);
         // Iterer sur analyseDeclaration et analyseInstruction tant qu'on est dans un bloc
-        while (!this.uniteCourante.equals(Consts.BLOC_CLOSE)) {
-            // Verifier si il s'agit d'une declaration ou d'une instruction
-            if (uniteCourante.equals("entier")) {
-                analyseDeclaration();
-            } else bloc.ajouter(analyseInstruction());
+
+        // Verifier si il s'agit d'une declaration ou d'une instruction
+        while (uniteCourante.equals("entier") || uniteCourante.equals("tableau")) {
+            analyseDeclaration();
         }
+        bloc.ajouter(analyseInstruction());
+
+        while (!this.uniteCourante.equals(Consts.BLOC_CLOSE))
+            bloc.ajouter(analyseInstruction());
+
 
         // Verifier qu'une fois en dehors de la boucle, il s'agit de la fin du bloc
         this.analyseTerminale(Consts.BLOC_CLOSE);
@@ -118,7 +122,7 @@ public class AnalyseurSyntaxique {
 
         Instruction instruction;
         // Verifier que l'unite lexicale est valide et qu'il ne s'agit pas du mot clef ecrire
-        if (estIdf() && !this.uniteCourante.equals(Consts.PRINT)) {
+        if (!this.uniteCourante.equals(Consts.PRINT)) {
             instruction = analyseAffectation();
 
         } else {
@@ -134,6 +138,8 @@ public class AnalyseurSyntaxique {
      */
     private Ecrire analyseEcrire() throws ErreurSyntaxique {
 
+
+        analyseTerminale("ecrire");
 
         // Analyser l'expression
         Expression e = analyseExpression();
@@ -197,12 +203,14 @@ public class AnalyseurSyntaxique {
      *
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
-    private void analyseAcces() throws ErreurSyntaxique {
+    private Acces analyseAcces() throws ErreurSyntaxique {
         // Verifier qu'il s'agit d'un Idf
         if (!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");
         }
         this.uniteCourante = this.analyseurLexical.next();
+
+        if()
     }
 
     /**
@@ -216,18 +224,14 @@ public class AnalyseurSyntaxique {
         Expression expression;
 
         // Verifier que l'UL est un := si c'est dans le cas non ecrire
-        if (!this.uniteCourante.equals(Consts.PRINT)) {
-            analyseTerminale(Consts.AFFECTATION);
-        } else this.uniteCourante = this.analyseurLexical.next();
-
-        if (pasConstanteEntiere()) {
-            expression = new Idf(this.uniteCourante);
-
-        } else {
-            expression = new Nombre(Integer.parseInt(this.uniteCourante));
-        }
-
-        this.uniteCourante = this.analyseurLexical.next();
+        if (!estIdf() && pasConstanteEntiere()) {
+            throw new ErreurSyntaxique("idf ou entier attendu");
+        } else if(estIdf())
+                expression = analyseAcces();
+            else {
+                    expression = new Nombre(Integer.parseInt(uniteCourante));
+                    this.uniteCourante = this.analyseurLexical.next();
+                }
 
         return expression;
     }
@@ -238,16 +242,7 @@ public class AnalyseurSyntaxique {
      * @return l'unite lexicale courrante est un entier
      */
     private boolean pasConstanteEntiere() {
-        try {
-
-            // Essayer de parse en Int l'unite courrante
-            Integer.parseInt(this.uniteCourante);
-        } catch (NumberFormatException | NullPointerException e) {
-
-            // l'UL n'est pas un entier
-            return true;
-        }
-        return false;
+        return !this.uniteCourante.matches("[0-9]+");
     }
 
     /**
