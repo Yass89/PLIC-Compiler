@@ -204,13 +204,20 @@ public class AnalyseurSyntaxique {
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Acces analyseAcces() throws ErreurSyntaxique {
+        Acces acces = null;
         // Verifier qu'il s'agit d'un Idf
         if (!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");
         }
         this.uniteCourante = this.analyseurLexical.next();
 
-        if()
+        if (this.uniteCourante.equals("[")) {
+            this.uniteCourante = this.analyseurLexical.next();
+            Expression e = analyseExpression();
+            analyseTerminale("]");
+        }
+
+        return acces;
     }
 
     /**
@@ -223,15 +230,14 @@ public class AnalyseurSyntaxique {
 
         Expression expression;
 
-        // Verifier que l'UL est un := si c'est dans le cas non ecrire
         if (!estIdf() && pasConstanteEntiere()) {
             throw new ErreurSyntaxique("idf ou entier attendu");
-        } else if(estIdf())
-                expression = analyseAcces();
-            else {
-                    expression = new Nombre(Integer.parseInt(uniteCourante));
-                    this.uniteCourante = this.analyseurLexical.next();
-                }
+        } else if (estIdf())
+            expression = analyseAcces();
+        else {
+            expression = new Nombre(Integer.parseInt(uniteCourante));
+            this.uniteCourante = this.analyseurLexical.next();
+        }
 
         return expression;
     }
