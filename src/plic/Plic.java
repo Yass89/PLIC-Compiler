@@ -24,7 +24,8 @@ public class Plic {
         try {
             new Plic(args[0]);
         } catch (FileNotFoundException | ErreurFile | ErreurSyntaxique | DoubleDeclaration | ErreurSemantique e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
+            //System.out.println(e.getMessage());
         }
     }
 

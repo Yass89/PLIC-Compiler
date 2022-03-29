@@ -42,6 +42,11 @@ public class Nombre extends Expression {
     }
 
     @Override
+    public String toMips() {
+        return null;
+    }
+
+    @Override
     public Object getVal() {
         return val;
     }

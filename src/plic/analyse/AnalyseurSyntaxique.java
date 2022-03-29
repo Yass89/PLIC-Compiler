@@ -158,22 +158,30 @@ public class AnalyseurSyntaxique {
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private void analyseDeclaration() throws ErreurSyntaxique, DoubleDeclaration {
-
+        Entree entree;
         Symbole symbole = new Symbole(this.uniteCourante);
         // Regarder que le type de la declaration est valide
-        analyseTerminale(Consts.TYPE);
+        analyseType();
 
         // Verifier qu'il s'agit d'un IDF
         if (!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");
         }
-        Entree entry = new Entree(this.uniteCourante);
+        entree = new Entree(this.uniteCourante);
         this.uniteCourante = this.analyseurLexical.next();
 
         // Verifier que la fin de la declaration est bien un ;
         analyseTerminale(Consts.SEPARATEUR);
 
-        TDS.getInstance().ajouter(entry, symbole);
+        TDS.getInstance().ajouter(entree, symbole);
+    }
+
+    private void analyseType() throws ErreurSyntaxique {
+        if (this.uniteCourante.equals("entier") || this.uniteCourante.equals("tableau")) {
+            this.uniteCourante = this.analyseurLexical.next();
+        } else {
+            throw new ErreurSyntaxique("Type attendu");
+        }
     }
 
     /**
@@ -183,12 +191,13 @@ public class AnalyseurSyntaxique {
      */
     private Affectation analyseAffectation() throws ErreurSyntaxique {
 
-        Idf idf = new Idf(this.uniteCourante);
         // Analyse qu'il s'agit d'un acces
         analyseAcces();
 
+        analyseTerminale(Consts.AFFECTATION);
         // Analyseer qu'il s'agit d'une expression
         Expression e = analyseExpression();
+        Idf idf = new Idf(this.uniteCourante);
 
         Affectation affectation = new Affectation(e, idf);
 
@@ -204,7 +213,7 @@ public class AnalyseurSyntaxique {
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Acces analyseAcces() throws ErreurSyntaxique {
-        Acces acces = null;
+        Acces acces;
         // Verifier qu'il s'agit d'un Idf
         if (!this.estIdf()) {
             throw new ErreurSyntaxique("Idf attendu");
