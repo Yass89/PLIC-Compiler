@@ -48,7 +48,6 @@ public class Plic {
         if (file.isHidden()) throw new ErreurFile("Le fichier est caché");
         AnalyseurSyntaxique analyseurSyntaxique = new AnalyseurSyntaxique(file);
         Bloc bloc = analyseurSyntaxique.analyse();
-        System.out.println(TDS.getInstance().getTableSymboles());
         bloc.verifier();
         String code = bloc.toMips();
         System.out.println(code);

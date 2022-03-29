@@ -158,18 +158,36 @@ public class AnalyseurSyntaxique {
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private void analyseDeclaration() throws ErreurSyntaxique, DoubleDeclaration {
-        Entree entree;
+        Entree entree = null;
         Symbole symbole = new Symbole(this.uniteCourante);
         // Regarder que le type de la declaration est valide
-        analyseType();
-        System.out.println("test unite courante"+this.uniteCourante);
 
-        // Verifier qu'il s'agit d'un IDF
-        if (!this.estIdf()) {
-            throw new ErreurSyntaxique("Idf attendu");
+
+        if (analyseType().equals("entier")) {
+            // Verifier qu'il s'agit d'un IDF
+            if (!this.estIdf()) {
+                throw new ErreurSyntaxique("Idf attendu");
+            }
+            entree = new Entree(this.uniteCourante);
+            this.uniteCourante = this.analyseurLexical.next();
+
+        } else {
+            if (this.uniteCourante.equals("[")) {
+                this.uniteCourante = this.analyseurLexical.next();
+
+                // Check de la taille du tableau
+                if (!pasConstanteEntiere()) {
+                    this.uniteCourante = this.analyseurLexical.next();
+                } else throw new ErreurSyntaxique("Constante entiere attendue lors d'une déclaration de tableau");
+
+                analyseTerminale("]");
+
+                if (estIdf()) entree = new Entree(this.uniteCourante);
+                else throw new ErreurSyntaxique("Nom du tableau attendu");
+
+                this.uniteCourante = this.analyseurLexical.next();
+            }
         }
-        entree = new Entree(this.uniteCourante);
-        this.uniteCourante = this.analyseurLexical.next();
 
         // Verifier que la fin de la declaration est bien un ;
         analyseTerminale(Consts.SEPARATEUR);
@@ -177,12 +195,19 @@ public class AnalyseurSyntaxique {
         TDS.getInstance().ajouter(entree, symbole);
     }
 
-    private void analyseType() throws ErreurSyntaxique {
+    private String analyseType() throws ErreurSyntaxique {
+        String res;
         if (this.uniteCourante.equals("entier") || this.uniteCourante.equals("tableau")) {
+            if (this.uniteCourante.equals("entier")) {
+                res = "entier";
+            } else {
+                res = "tableau";
+            }
             this.uniteCourante = this.analyseurLexical.next();
         } else {
             throw new ErreurSyntaxique("Type attendu");
         }
+        return res;
     }
 
     /**
@@ -194,8 +219,6 @@ public class AnalyseurSyntaxique {
 
         // Analyse qu'il s'agit d'un acces
         Acces acces = analyseAcces();
-
-        System.out.println(uniteCourante);
 
         analyseTerminale(Consts.AFFECTATION);
         // Analyseer qu'il s'agit d'une expression
@@ -230,7 +253,6 @@ public class AnalyseurSyntaxique {
             acces = new AccesTableau(idf, e);
             analyseTerminale("]");
         }
-        System.out.println("acces="+acces);
 
         return acces;
     }

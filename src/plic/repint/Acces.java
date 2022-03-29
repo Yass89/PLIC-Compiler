@@ -12,22 +12,6 @@ public class Acces extends Expression{
         this.expression = null;
     }
 
-    public Idf getIdf() {
-        return idf;
-    }
-
-    public void setIdf(Idf idf) {
-        this.idf = idf;
-    }
-
-    public Expression getExpression() {
-        return expression;
-    }
-
-    public void setExpression(Expression expression) {
-        this.expression = expression;
-    }
-
 
     public String toString() {
         return ""+idf;
