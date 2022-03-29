@@ -12,6 +12,9 @@ public class Acces extends Expression{
         this.expression = null;
     }
 
+    public void setExpression(Expression expression) {
+        this.expression = expression;
+    }
 
     public String toString() {
         return ""+idf;
@@ -20,6 +23,8 @@ public class Acces extends Expression{
 
     @Override
     public void verifier() throws ErreurSemantique {
+        idf.verifier();
+        if(expression != null) expression.verifier();
 
     }
 

@@ -161,8 +161,6 @@ public class AnalyseurSyntaxique {
         Entree entree = null;
         Symbole symbole = new Symbole(this.uniteCourante);
         // Regarder que le type de la declaration est valide
-
-
         if (analyseType().equals("entier")) {
             // Verifier qu'il s'agit d'un IDF
             if (!this.estIdf()) {
@@ -250,7 +248,8 @@ public class AnalyseurSyntaxique {
         if (this.uniteCourante.equals("[")) {
             this.uniteCourante = this.analyseurLexical.next();
             Expression e = analyseExpression();
-            acces = new AccesTableau(idf, e);
+            acces = new Acces(idf);
+            acces.setExpression(e);
             analyseTerminale("]");
         }
 
