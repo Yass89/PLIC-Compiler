@@ -6,6 +6,7 @@ import plic.exceptions.ErreurFile;
 import plic.exceptions.ErreurSemantique;
 import plic.exceptions.ErreurSyntaxique;
 import plic.repint.Bloc;
+import plic.repint.TDS;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,6 +48,7 @@ public class Plic {
         if (file.isHidden()) throw new ErreurFile("Le fichier est caché");
         AnalyseurSyntaxique analyseurSyntaxique = new AnalyseurSyntaxique(file);
         Bloc bloc = analyseurSyntaxique.analyse();
+        System.out.println(TDS.getInstance().getTableSymboles());
         bloc.verifier();
         String code = bloc.toMips();
         System.out.println(code);

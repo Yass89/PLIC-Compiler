@@ -29,6 +29,11 @@ public class Acces extends Expression{
     }
 
 
+    public String toString() {
+        return ""+idf;
+    }
+
+
     @Override
     public void verifier() throws ErreurSemantique {
 
@@ -42,5 +47,9 @@ public class Acces extends Expression{
     @Override
     public Object getVal() {
         return null;
+    }
+
+    public String getNom() {
+        return idf.getNom();
     }
 }

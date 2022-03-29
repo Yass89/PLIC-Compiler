@@ -103,9 +103,9 @@ public class AnalyseurSyntaxique {
         }
         bloc.ajouter(analyseInstruction());
 
-        while (!this.uniteCourante.equals(Consts.BLOC_CLOSE))
+        while (!this.uniteCourante.equals(Consts.BLOC_CLOSE)) {
             bloc.ajouter(analyseInstruction());
-
+        }
 
         // Verifier qu'une fois en dehors de la boucle, il s'agit de la fin du bloc
         this.analyseTerminale(Consts.BLOC_CLOSE);
@@ -162,6 +162,7 @@ public class AnalyseurSyntaxique {
         Symbole symbole = new Symbole(this.uniteCourante);
         // Regarder que le type de la declaration est valide
         analyseType();
+        System.out.println("test unite courante"+this.uniteCourante);
 
         // Verifier qu'il s'agit d'un IDF
         if (!this.estIdf()) {
@@ -192,14 +193,15 @@ public class AnalyseurSyntaxique {
     private Affectation analyseAffectation() throws ErreurSyntaxique {
 
         // Analyse qu'il s'agit d'un acces
-        analyseAcces();
+        Acces acces = analyseAcces();
+
+        System.out.println(uniteCourante);
 
         analyseTerminale(Consts.AFFECTATION);
         // Analyseer qu'il s'agit d'une expression
         Expression e = analyseExpression();
-        Idf idf = new Idf(this.uniteCourante);
 
-        Affectation affectation = new Affectation(e, idf);
+        Affectation affectation = new Affectation(e, acces);
 
         // Verifier que l'UL est une ;
         analyseTerminale(Consts.SEPARATEUR);
@@ -228,6 +230,7 @@ public class AnalyseurSyntaxique {
             acces = new AccesTableau(idf, e);
             analyseTerminale("]");
         }
+        System.out.println("acces="+acces);
 
         return acces;
     }

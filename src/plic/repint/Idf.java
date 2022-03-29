@@ -48,7 +48,8 @@ public class Idf extends Expression {
     @Override
     public void verifier() throws ErreurSemantique {
         Map<Entree, Symbole> tableSymbole = TDS.getInstance().getTableSymboles();
-        if (!tableSymbole.containsKey(new Entree(this.nom))) throw new ErreurSemantique("Idf non declare");
+        System.out.println(this.nom);
+        if (!tableSymbole.containsKey(new Entree(this.nom))) throw new ErreurSemantique("Idf non declare"+this.nom);
     }
 
     @Override
