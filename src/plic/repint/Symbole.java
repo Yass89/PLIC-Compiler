@@ -17,6 +17,8 @@ public class Symbole {
      */
     private int deplacement;
 
+    private int taille;
+
     /**
      * Constructeur symbole -- unused -- test
      *
@@ -28,6 +30,13 @@ public class Symbole {
         this.deplacement = deplacement;
     }
 
+    public int getTaille() {
+        return taille;
+    }
+
+    public void setTaille(int taille) {
+        this.taille = taille;
+    }
 
     /**
      * Constructeur de symbole

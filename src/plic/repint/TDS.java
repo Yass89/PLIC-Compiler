@@ -54,6 +54,9 @@ public class TDS {
             s.setDeplacement(cptDepl);
             this.tableSymboles.put(e, s);
             cptDepl -= 4;
+            for(int i = 1;i<s.getTaille();i++){
+                cptDepl -= 4;
+            }
         } else throw new DoubleDeclaration("Double déclaration");
     }
 

@@ -175,8 +175,10 @@ public class AnalyseurSyntaxique {
 
                 // Check de la taille du tableau
                 if (!pasConstanteEntiere()) {
+                    symbole.setTaille(Integer.parseInt(this.uniteCourante));  // On ajoute la taille du tableau dans le symbole
                     this.uniteCourante = this.analyseurLexical.next();
                 } else throw new ErreurSyntaxique("Constante entiere attendue lors d'une déclaration de tableau");
+
 
                 analyseTerminale("]");
 

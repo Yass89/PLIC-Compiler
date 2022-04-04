@@ -49,22 +49,18 @@ public class Ecrire extends Instruction {
         StringBuilder mips = new StringBuilder();
 
         // Met la valeur de l'expression dans $v0
-        mips.append(e.toMips());
-
-        /*
-        if (e instanceof Idf) {
-            Entree entree = new Entree((String) e.getVal());
-            Symbole symbole = TDS.getInstance().identifier(entree);
-            mips.append("li $v0 , 1\n" + "lw $a0 ,").append(symbole.getDeplacement()).append("($sp)").append("\n").append("syscall \n");
-        } else {
-            mips.append("li $v0 , 1\n" + "li $a0 ,").append(e.getVal()).append("\n").append("syscall \n");
+        mips.append("li $v0, 1\n");
+        if(e instanceof Nombre) {
+            mips.append("li $a0, " + e.toMips() + "\n");
         }
-        mips.append("la $a0,newLine\n" +
-                "addi $v0,$0,4\n" +
-                "syscall\n");
-
-         */
+        if(e instanceof Acces) {
+            mips.append(e.toMips());
+            mips.append("lw $a0, ($a0)\n");
+        }
+        if(e instanceof Idf) {
+            mips.append("lw $a0, " + e.toMips() + "\n");
+        }
+        mips.append("syscall\n");
         return mips.toString();
-
     }
 }

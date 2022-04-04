@@ -43,7 +43,7 @@ public class Nombre extends Expression {
 
     @Override
     public String toMips() {
-        return null;
+        return  val + "";
     }
 
     @Override
