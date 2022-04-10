@@ -1,0 +1,15 @@
+programme pliczerodeux {
+    entier o ; entier i
+
+    o := 256 ;
+
+
+
+
+    i := o ;
+
+
+    // Ecrire
+    ecrire o ;
+    ecrire 3 ;
+}

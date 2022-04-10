@@ -2,13 +2,15 @@ package plic.repint;
 
 import plic.exceptions.ErreurSemantique;
 
+/**
+ * @author unshade
+ */
 public abstract class Expression {
 
-	public abstract String toString();
+    public abstract void verifier() throws ErreurSemantique;
 
-	public abstract void verifier() throws ErreurSemantique;
+    public abstract String toMips();
 
-	public abstract String toMips();
+    public abstract Object getVal();
 
-	public abstract String getType();
 }

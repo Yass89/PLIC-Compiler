@@ -1,4 +1,0 @@
-programme plic {
-    entier i ;
-    tantque ( i ) repeter { ecrire 13 ; }
-}

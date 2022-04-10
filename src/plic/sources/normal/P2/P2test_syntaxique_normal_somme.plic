@@ -1,6 +1,0 @@
-programme plic {
-    entier k ; entier j ;
-    k := 2 ;
-    j := 4 + k ;
-    ecrire j ;
-}

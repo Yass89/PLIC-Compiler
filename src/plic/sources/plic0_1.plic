@@ -1,0 +1,13 @@
+programme pliczeroun {
+
+    // declarer des entiers
+    entier k ; entier l ; entier i ;
+
+    // Affecter des valeurs
+    i := 57 ;
+    k := i ;    l := i ;
+}
+
+// Commentaire
+
+// Test 2 lignes

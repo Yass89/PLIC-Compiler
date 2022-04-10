@@ -1,6 +1,0 @@
-//début du programme
-programme plic {
-    entier k ;
-    entier k ;
-    ecrire k ;
-}

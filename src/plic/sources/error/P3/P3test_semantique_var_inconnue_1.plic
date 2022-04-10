@@ -1,5 +1,0 @@
-programme plic {
-    si ( x > 3 ) alors {
-        ecrire ( x + 3 ) ;
-    }
-}

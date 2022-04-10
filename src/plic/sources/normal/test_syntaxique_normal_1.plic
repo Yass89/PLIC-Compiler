@@ -3,6 +3,4 @@ programme plic {
 
     entier EOF ;
 
-    ecrire EOF ;
-
 }

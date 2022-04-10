@@ -1,3 +1,0 @@
-programme plic {
-    si ( 12 > 3 ) alors { ecrire 3 ; } sinon { ecrire 12 ;
-}
