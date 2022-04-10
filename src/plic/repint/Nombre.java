@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author unshade
  */
-public class Nombre extends Expression {
+public class Nombre extends Operande {
 
     /**
      * Valeur du nombre
@@ -47,8 +47,8 @@ public class Nombre extends Expression {
     }
 
     @Override
-    public Object getVal() {
-        return val;
+    public String getType() {
+        return null;
     }
 
 }

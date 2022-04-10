@@ -1,9 +1,0 @@
-programme plic {
-    entier k ; entier z ; tableau [ 6 ] f ; entier r ; tableau [ 2 ] g ;
-    f [ 5 ] := 1 ; g [ 1 ] := 1 ;
-    f [ f [ 5 ] ] := 5 ;
-    k := 20 ;
-    ecrire k ;
-    ecrire f [ 1 ] ;
-    ecrire f [ g [ 1 ] ] ;
-}

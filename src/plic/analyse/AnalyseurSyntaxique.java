@@ -264,20 +264,68 @@ public class AnalyseurSyntaxique {
      * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
      */
     private Expression analyseExpression() throws ErreurSyntaxique {
+        Operande operandeUn = analyseOperande();
 
+        if (estOperateur()) {
+            String operateur = uniteCourante;
+            uniteCourante = analyseurLexical.next();
+            Operande operandeDeux = analyseOperande();
 
-        Expression expression;
-
-        if (!estIdf() && pasConstanteEntiere()) {
-            throw new ErreurSyntaxique("idf ou entier attendu");
-        } else if (estIdf())
-            expression = analyseAcces();
-        else {
-            expression = new Nombre(Integer.parseInt(uniteCourante));
-            this.uniteCourante = this.analyseurLexical.next();
+            return switch (operateur) {
+                case "+" -> new Somme(operandeUn, operandeDeux);
+                case "-" -> new Difference(operandeUn, operandeDeux);
+                case "*" -> new Produit(operandeUn, operandeDeux);
+                case "=" -> new Egalite(operandeUn, operandeDeux);
+                case "#" -> new Different(operandeUn, operandeDeux);
+                case ">=" -> new SupOuEgal(operandeUn, operandeDeux);
+                case "<=" -> new InfOuEgal(operandeUn, operandeDeux);
+                case ">" -> new StrictSup(operandeUn, operandeDeux);
+                case "<" -> new StrictInf(operandeUn, operandeDeux);
+                case "ou" -> new OuLogique(operandeUn, operandeDeux);
+                case "et" -> new EtLogique(operandeUn, operandeDeux);
+                default -> null;
+            };
+        } else {
+            return operandeUn;
         }
+    }
 
-        return expression;
+    private boolean estOperateur() {
+        return this.uniteCourante.matches("[-|+|*|et|ou|<|>|=|#|<=|>=]+");
+    }
+
+    private Operande analyseOperande() throws ErreurSyntaxique {
+        if (!pasConstanteEntiere()) {
+            int val = Integer.parseInt(uniteCourante);
+            uniteCourante = analyseurLexical.next();
+            return new Nombre(val);
+
+        } else {
+            if (uniteCourante.equals("-")) {
+                uniteCourante = analyseurLexical.next();
+                analyseTerminale("(");
+                Expression expr = analyseExpression();
+                analyseTerminale(")");
+                return new MoinsExpression(expr);
+
+            } else if (uniteCourante.equals("non")) {
+                uniteCourante = analyseurLexical.next();
+                Expression expr = analyseExpression();
+                return new NonExpression(expr);
+
+            } else if (uniteCourante.equals("(")) {
+                uniteCourante = analyseurLexical.next();
+                Expression expr = analyseExpression();
+                analyseTerminale(")");
+                return new ParenthesesExpression(expr);
+
+            } else if (estIdf()) {
+                return analyseAcces();
+
+            } else {
+                throw new ErreurSyntaxique("operande attendu");
+            }
+        }
     }
 
     /**

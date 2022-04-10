@@ -60,9 +60,10 @@ public class Idf extends Expression {
     }
 
     @Override
-    public Object getVal() {
-        return nom;
+    public String getType() {
+        return null;
     }
+
 
     @Override
     public boolean equals(Object o) {
