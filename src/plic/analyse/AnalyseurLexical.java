@@ -1,58 +1,55 @@
 package plic.analyse;
 
-import plic.Consts;
+import plic.exception.SyntaxException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
-/**
- * @author unshade
- */
-public class AnalyseurLexical {
+public final class AnalyseurLexical {
 
-    /**
-     * Scanneur
-     */
-    private final Scanner scanner;
+    private Scanner sc;
+    public static final String EOF = "\t";
+    public static boolean instruction = false;
+    public static ArrayList<String> caracOK = new ArrayList<>(Arrays.asList("{", ";", "}", "[", "]", ":=", "+", "-", "*",
+            "(", ")", ">", "<", "#", "<=", ">=", "=", "et", "ou",".."));
 
-    /**
-     * Constructeur de l'analyseur lexical
-     *
-     * @param file fichier a analyser
-     * @throws FileNotFoundException cas où le fichier est non trouvé
-     */
-    public AnalyseurLexical(File file) throws FileNotFoundException {
-        this.scanner = new Scanner(file);
+    public Token getToken() {
+        return token;
     }
 
-    /**
-     * Passer à l'unite lexicale suivante dans le fichier
-     *
-     * @return l'unite lexicale suivante
-     */
-    public String next() {
-        String uniteLexicale = "";
-        if (this.scanner.hasNext()) {
-            uniteLexicale = this.scanner.next();
+    private Token token;
 
-            // Verifier que l'unite lexicale n'est pas une ligne de commentaire
-            while (uniteLexicale.startsWith(Consts.COMMENTAIRES)) {
+    public AnalyseurLexical(File fichier) throws FileNotFoundException {
+        sc = new Scanner(fichier);
+        token = new Token();
+    }
 
-                if (this.scanner.hasNext()) {
-                    // Retirer la ligne de commentaire
-                    this.scanner.nextLine();
-
-                    // Verifier que la ligne suivant le commentaire n'est pas la fin de fichier
-                    if (this.scanner.hasNext()) {
-
-                        // Prendre la nouvelle valeur
-                        uniteLexicale = this.scanner.next();
-                    } else uniteLexicale = Consts.EOF;
-                } else uniteLexicale = Consts.EOF;
+    public String next() throws SyntaxException {
+        AnalyseurLexical.instruction = false;
+        while (sc.hasNext()) {
+            String s = sc.next();
+            if (s.startsWith("//")) {
+                if (sc.hasNextLine()) {
+                    if (AnalyseurLexical.instruction) {
+                        AnalyseurLexical.instruction = false;
+                    } else {
+                        token.augmenterLigne();
+                    }
+                    sc.nextLine();
+                }
+            } else {
+                if (s.equals("{") || s.equals(";") || s.equals("}"))
+                    token.augmenterLigne();
+                else if (!caracOK.contains(s) && !(s.matches("[a-zA-Z]+") || s.matches("[0-9]+"))) {
+                    throw new SyntaxException("'" + s + "' caractère inconnu");
+                }
+                AnalyseurLexical.instruction = true;
+                return s;
             }
-        } else uniteLexicale = Consts.EOF;
-        return uniteLexicale;
+        }
+        return EOF;
     }
-
 }

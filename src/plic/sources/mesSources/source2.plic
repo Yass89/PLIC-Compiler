@@ -1,0 +1,15 @@
+programme condition {
+    //affectation
+    entier un ;
+    entier deux ;
+    un := 2 ;
+    deux := 1 ;
+
+    si ( un > deux ) alors {
+        entier val := deux ;
+        deux := un ;
+        un := val ;
+    } sinon {
+        ecrire 2 ;
+    }
+}

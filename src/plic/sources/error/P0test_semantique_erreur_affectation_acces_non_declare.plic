@@ -1,7 +1,0 @@
-
-programme plic {
-
-    entier a ;
-    a := b ;
-
-}

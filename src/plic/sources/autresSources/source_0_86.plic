@@ -1,0 +1,4 @@
+// PLIC0
+programme Idd {
+	int x ;
+}

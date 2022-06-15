@@ -1,0 +1,22 @@
+programme boucle {
+    //affectation
+    entier un ;
+    entier deux ;
+    un := 2 ;
+    deux := 1 ;
+
+    tantque ( deux < un ) {
+        deux :=
+        deux
+
+        +
+        1
+        ;
+    }
+
+    entier i ;
+
+    pour i dans 1 .. 3 repeter {
+        ecrire i ;
+    }
+}

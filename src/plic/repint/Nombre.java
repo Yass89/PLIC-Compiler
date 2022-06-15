@@ -1,26 +1,15 @@
 package plic.repint;
 
-import plic.exceptions.ErreurSemantique;
+import plic.exception.SemanticException;
 
-import java.util.Map;
+import java.util.Objects;
 
-/**
- * @author unshade
- */
 public class Nombre extends Expression {
 
-    /**
-     * Valeur du nombre
-     */
     private int val;
 
-    /**
-     * Constructeur de valeur
-     *
-     * @param val valeur
-     */
-    public Nombre(int val) {
-        this.val = val;
+    public Nombre(int valeur) {
+        val = valeur;
     }
 
     @Override
@@ -30,25 +19,63 @@ public class Nombre extends Expression {
                 '}';
     }
 
-    /**
-     * Verifier que le nombre est semantquement correct
-     *
-     * @throws ErreurSemantique err semantique
-     */
     @Override
-    public void verifier() throws ErreurSemantique {
-        Map<Entree, Symbole> tableSymbole = TDS.getInstance().getTableSymboles();
-        if (!tableSymbole.containsValue(new Symbole("entier"))) throw new ErreurSemantique("Nombre invalide");
+    public void verifier() throws SemanticException {
+        // ne fais rien
     }
 
     @Override
-    public String toMips() {
-        return  val + "";
+    public String getType() {
+        return "Nombre";
     }
 
     @Override
-    public Object getVal() {
+    public String toMipsLHS() {
+        return "\tli $a0, "+ val;
+    }
+
+
+    @Override
+    public String toMipsRHS() {
+        return "\tli $v0, "+ val;
+    }
+
+    @Override
+    public String valeur() {
+        return String.valueOf(val);
+    }
+
+    public int getVal() {
         return val;
     }
 
+    public void setVal(int val) {
+        this.val = val;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Nombre nombre = (Nombre) o;
+        return val == nombre.val;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(val);
+    }
+
+    @Override
+    public String getAddress() {
+        return null;
+    }
+
+    @Override
+    public String inverser() {
+        if (!getNeg().equals(""))
+            return "mul $v0, $v0, -1";
+        else
+            return "";
+    }
 }

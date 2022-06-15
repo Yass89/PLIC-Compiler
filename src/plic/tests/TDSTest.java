@@ -1,6 +1,6 @@
 package plic.tests;
 
-import plic.exceptions.DoubleDeclaration;
+import plic.exception.DoubleDeclaration;
 import plic.repint.Entree;
 import plic.repint.Symbole;
 import plic.repint.TDS;
@@ -8,38 +8,47 @@ import plic.repint.TDS;
 import static org.junit.Assert.*;
 
 public class TDSTest {
-
-    Entree e1;
-    Entree e2;
-    Entree e3;
-
-    Symbole s1;
-    Symbole s2;
-    Symbole s3;
+    private TDS tds;
+    private Entree e;
+    private Symbole s;
 
     @org.junit.Before
     public void setUp() throws Exception {
-        e1 = new Entree("k");
-        e2 = new Entree("k");
-        e3 = new Entree("@");
-
-        s1 = new Symbole("entier");
-        s2 = new Symbole("entier");
-        s3 = new Symbole("hugo");
+        tds=TDS.getInstance();
+        e = new Entree("coucou");
+        s = new Symbole("entier");
     }
 
-    @org.junit.After
-    public void tearDown() throws Exception {
-    }
-
-    @org.junit.Test (expected = DoubleDeclaration.class)
-    public void getInstance() throws DoubleDeclaration {
-        TDS.getInstance().ajouter(e1, s1);
-        TDS.getInstance().ajouter(e2, s2);
+    @org.junit.Test
+    public void getInstance() {
+        assertEquals("Les instances devraient être les mêmes",tds,TDS.getInstance());
     }
 
     @org.junit.Test
     public void ajouter() {
+        try {
+            assertEquals("Le deplacement devrait commencer à 0",0,tds.getCptDepl());
+            tds.ajouter(e,s);
+            assertEquals("Un couple aurait dû être ajouter",1,tds.hashMapSize());
+            assertTrue("La clé coucou de vrait exister",tds.cleExiste(e));
+            assertEquals("Le symbole devrait être un entier", "entier", tds.getValue(e).getType());
+            assertEquals("Le deplacement devrait être de 0", 0, tds.getValue(e).getDeplacement());
+            Entree e1 = new Entree("cc");
+            assertEquals("Le deplacement devrait être à -4",-4,tds.getCptDepl());
+            tds.ajouter(e1,s);
+            assertEquals("Un couple aurait dû être ajouter",2,tds.hashMapSize());
+            assertTrue("La clé coucou de vrait exister",tds.cleExiste(e1));
+            assertEquals("Le symbole devrait être un entier", "entier", tds.getValue(e).getType());
+            assertEquals("Le deplacement devrait être de 0", -4, tds.getValue(e).getDeplacement());
+            assertEquals("Le deplacement devrait être à -8",-8,tds.getCptDepl());
+        } catch (DoubleDeclaration doubleDeclaration) {
+            doubleDeclaration.printStackTrace();
+        }
     }
 
+    @org.junit.Test (expected = DoubleDeclaration.class)
+    public void doubleDeclaration() throws DoubleDeclaration {
+        tds.ajouter(e,s);
+        tds.ajouter(e,s);
+    }
 }

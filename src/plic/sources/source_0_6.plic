@@ -1,0 +1,8 @@
+programme plic {
+    //Déclaration des entiers
+    entier x ; entier y ;
+
+    x := 5 ; y := 3 ; // Commentaire en fin de ligne
+
+    ecrire x ; ecrire y ;
+}

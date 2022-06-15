@@ -1,0 +1,12 @@
+
+programme k {
+entier test ;
+
+test  = 1;
+
+ecrire test // ecrire
+
+//si test = 3 alors { ecrire 4 ; } sinon { ecrire 5 ;}
+
+
+}

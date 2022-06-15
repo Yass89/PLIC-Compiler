@@ -1,27 +1,15 @@
 package plic.repint;
 
-import plic.exceptions.ErreurSemantique;
+import plic.exception.SemanticException;
 
-import java.util.Map;
 import java.util.Objects;
 
-/**
- * @author unshade
- */
-public class Idf extends Expression {
+public class Idf extends Acces {
 
-    /**
-     * Nom de l'idf
-     */
-    private final String nom;
+    private String nom;
 
-    /**
-     * Constructeur d'idf
-     *
-     * @param nom
-     */
-    public Idf(String nom) {
-        this.nom = nom;
+    public Idf(String nom){
+        this.nom=nom;
     }
 
     @Override
@@ -31,37 +19,42 @@ public class Idf extends Expression {
                 '}';
     }
 
-    /**
-     * getter nom
-     *
-     * @return nom idf
-     */
+    @Override
+    public void verifier() throws SemanticException {
+        if (!TDS.getInstance().cleExiste(new Entree(nom)))
+            throw new SemanticException("Variable "+nom+" non déclarée");
+        if (!TDS.getInstance().getValue(new Entree(nom)).getType().equals("Entier"))
+            throw new SemanticException("Variable "+nom+" n'est pas un entier");
+    }
+
+    @Override
+    public String getType() {
+        return "Idf";
+    }
+
+    @Override
+    public String toMipsLHS() {
+        String res = "";
+        res+= "\tla $a0, " + getAddress();
+        return res;
+    }
+
+    @Override
+    public String toMipsRHS() {
+        return "\tlw $v0, "+TDS.getInstance().identifier(new Entree(nom)).getDeplacement() +"($s7)";
+    }
+
+    @Override
+    public String valeur() {
+        return nom;
+    }
+
     public String getNom() {
         return nom;
     }
 
-    /**
-     * Verifier que l'idf est semantiquement correct
-     *
-     * @throws ErreurSemantique err semantique
-     */
-    @Override
-    public void verifier() throws ErreurSemantique {
-        Map<Entree, Symbole> tableSymbole = TDS.getInstance().getTableSymboles();
-        if (!tableSymbole.containsKey(new Entree(this.nom))) throw new ErreurSemantique("Idf non declare");
-    }
-
-    @Override
-    public String toMips() {
-        Entree e = new Entree(this.nom);
-        Symbole s = TDS.getInstance().identifier(e);
-        return s.getDeplacement()+"($" +
-                "sp)";
-    }
-
-    @Override
-    public Object getVal() {
-        return nom;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     @Override
@@ -76,5 +69,9 @@ public class Idf extends Expression {
     public int hashCode() {
         return Objects.hash(nom);
     }
-}
 
+    @Override
+    public String getAddress() {
+        return TDS.getInstance().getValue(new Entree(nom)).getDeplacement() + "($s7)";
+    }
+}

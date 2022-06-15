@@ -1,0 +1,20 @@
+//debut programme quatre mots
+//
+// coucou
+//hey
+programme affectationEtEcriture { //test
+    //declaration
+    entier un ;
+    entier EOF ;
+
+    //affectation
+    un := 2 ;
+    EOF := 1 ;
+
+
+    // ecriture // commentaire
+    ecrire un ;
+    ecrire EOF; //coucou
+}
+//commentaire de test
+//deuxieme comment

@@ -1,0 +1,13 @@
+//Debut
+//----
+programme sourceB {
+	
+	//variable azerty
+	entier azerty ; //Com
+	
+	//affectation azerty
+			azerty := 26 ;
+	
+}
+// ----
+//Fin

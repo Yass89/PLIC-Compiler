@@ -1,0 +1,30 @@
+programme affectationEtEcriture {
+    //premier test
+    entier un ;
+    entier deux ;
+    tableau [ 2 ] fdp ;
+    un := 2 ;
+    deux := 1 ;
+    fdp [ 0 ] := 3 ;
+    fdp [ 1 ] := 6 ;
+    entier trois ;
+    lire trois ;
+
+    // ecriture
+    ecrire
+
+
+
+
+    trois
+
+
+
+
+
+    ;
+    ecrire un ;
+    ecrire un + deux ;
+    ecrire fdp ;
+    ecrire fdp [ 2 ] + un ;
+}

@@ -1,16 +1,35 @@
 package plic.repint;
 
-import plic.exceptions.ErreurSemantique;
+import plic.exception.SemanticException;
 
-/**
- * @author unshade
- */
 public abstract class Expression {
 
-    public abstract void verifier() throws ErreurSemantique;
+    protected String neg = "";
 
-    public abstract String toMips();
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 
-    public abstract Object getVal();
+    public abstract void verifier() throws SemanticException;
 
+    public abstract String toMipsLHS();
+
+    public abstract String toMipsRHS();
+
+    public abstract String valeur();
+
+    public abstract String getType();
+
+    public abstract String getAddress();
+
+    public void setNeg(String neg) {
+        this.neg=neg;
+    }
+
+    public String getNeg() {
+        return neg;
+    }
+
+    public abstract String inverser();
 }

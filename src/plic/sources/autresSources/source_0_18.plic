@@ -1,0 +1,11 @@
+programme kkk {
+tableau [ 4 ] test ; // commentaire \\\//;
+
+test [ 1 ] :=
+4 ;
+
+ecrire test ;
+
+
+
+}

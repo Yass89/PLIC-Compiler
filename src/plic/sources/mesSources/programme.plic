@@ -1,0 +1,11 @@
+//
+programme d    {
+
+    entier x ;
+
+    tantque ( x < 4 ) repeter {
+        ecrire x ;
+        x := x + 1 ;
+    }
+
+}

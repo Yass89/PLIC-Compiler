@@ -1,0 +1,10 @@
+programme source1 {
+    // bonjour aurevoir
+    entier a ;
+    entier b ;
+
+    a := 2 ;
+    b := 3 ;
+
+    ecrire a ;
+}

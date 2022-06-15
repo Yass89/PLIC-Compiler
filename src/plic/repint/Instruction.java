@@ -1,12 +1,17 @@
 package plic.repint;
 
-import plic.exceptions.ErreurSemantique;
+import plic.exception.SemanticException;
 
-/**
- * @author unshade
- */
 public abstract class Instruction {
-    public abstract void verifier() throws ErreurSemantique;
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
+    public abstract void verifier() throws SemanticException;
 
     public abstract String toMips();
+
+    public abstract String getType();
+
 }

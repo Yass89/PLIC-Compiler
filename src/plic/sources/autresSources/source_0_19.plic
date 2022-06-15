@@ -1,0 +1,14 @@
+programme plic {
+    // Déclaration des entiers
+    entier x ;
+    entier y ;
+// Un commentaire
+    x := 5 ;
+    y := 3 ;
+// ceci est un commentaire
+    ecrire x ; // Test
+    ecrire y ;
+}
+
+// est finalement
+//Commentaire

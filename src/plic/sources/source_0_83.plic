@@ -1,0 +1,7 @@
+// Programme 1
+programme prog {
+	entier a ; // declaration variable
+	a := 5 ; // affectation variable
+	ecrire a ; // afficher variable
+}
+// test commentaire

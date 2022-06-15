@@ -1,0 +1,8 @@
+programme prog { 
+	entier a ; // declaration variable
+	entier b := 1 ;
+	ecrire b ; // afficher variable
+	a := 5 ; // affectation variable
+	ecrire a ;
+	
+}

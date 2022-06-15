@@ -1,0 +1,13 @@
+//Debut
+//Debut2
+programme sourceA {
+	
+	//variable a
+	entier a ;
+	
+	//affectation a
+			a := 10 ; //commentaire
+	
+}
+
+//Fin

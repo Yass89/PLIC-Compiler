@@ -1,7 +1,0 @@
-
-programme plic {
-
-    a := 12 ;
-    a := b ;
-
-}

@@ -1,77 +1,79 @@
 package plic.repint;
 
-import plic.exceptions.ErreurSemantique;
+import plic.exception.SemanticException;
 
-/**
- * @author unshade
- */
+import java.util.Objects;
+
 public class Affectation extends Instruction {
 
-    /**
-     * Expression
-     */
-    Expression e;
+    private Expression expression;
+    private Acces acces;
 
-    /**
-     * Accès
-     */
-    Acces acces;
+    public Expression getExpression() {
+        return expression;
+    }
 
-    /**
-     * Constructeur d'affectation
-     *
-     * @param e   expression
-     * @param acces acces
-     */
-    public Affectation(Expression e, Acces acces) {
-        this.e = e;
+    public void setExpression(Expression expression) {
+        this.expression = expression;
+    }
+
+    public Acces getIdentificateur() {
+        return acces;
+    }
+
+    public void setIdentificateur(Acces acces) {
         this.acces = acces;
+    }
+
+    public Affectation(Expression e, Acces acces) {
+        expression = e;
+        this.acces=acces;
     }
 
     @Override
     public String toString() {
         return "Affectation{" +
-                "e=" + e +
-                ", acces=" + acces +
+                "expression=" + expression +
+                ", identificateur=" + acces +
                 '}';
     }
 
-    /**
-     * Verifier la semantique de l'affectation
-     *
-     * @throws ErreurSemantique erreur semantique dans l'affectation'
-     */
     @Override
-    public void verifier() throws ErreurSemantique {
+    public void verifier() throws SemanticException {
         acces.verifier();
-        e.verifier();
+        if (expression.getType().equals("Boolean"))
+            throw new SemanticException("Impossible d'affecter un boolean à un "+acces.getType().toLowerCase());
+        expression.verifier();
     }
 
-    /**
-     * Convertir une affectation plic en mips
-     *
-     * @return le code mips
-     */
     @Override
     public String toMips() {
+        String sb = "# "+acces.valeur()+" := "+expression.valeur()+"\n";
+        sb+="\t#Acces\n";
+        sb += acces.toMipsLHS();
+        sb+="\n\n\t#Expression";
+        sb+= "\n" +expression.toMipsRHS();
+        sb += "\n\t#rangement dans v0\n\tsw $v0, ($a0)";
+        return sb;
+    }
 
-        // Recuperer l'entree et le symbole
-        Entree entree = new Entree(acces.getNom());
-        Symbole symbole = TDS.getInstance().identifier(entree);
-        StringBuilder mips = new StringBuilder();
-        if(e instanceof Nombre) {
-            mips.append("li $v0, " + e.toMips() + "\n");
-        }
-        if(e instanceof Acces) {
-            mips.append(e.toMips());
-            mips.append("lw $v0, ($a0)" + "\n");
-        }
-        if(e instanceof Idf) {
-            mips.append("lw $v0, " + e.toMips() + "\n");
-        }
-        mips.append(this.acces.toMips());
-        mips.append("sw $v0, ($a0)" + "\n");
-        return mips.toString();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Affectation that = (Affectation) o;
+        return Objects.equals(expression, that.expression) &&
+                Objects.equals(acces, that.acces);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expression, acces);
+    }
+
+    @Override
+    public String getType() {
+        return "affectation";
     }
 }

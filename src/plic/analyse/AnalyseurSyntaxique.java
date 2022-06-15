@@ -1,303 +1,368 @@
 package plic.analyse;
 
-import plic.Consts;
-import plic.exceptions.DoubleDeclaration;
-import plic.exceptions.ErreurSyntaxique;
+import plic.exception.AtLeastOneInstructionException;
+import plic.exception.DeclarationException;
+import plic.exception.DoubleDeclaration;
+import plic.exception.SyntaxException;
 import plic.repint.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
-/**
- * @author unshade
- */
 public class AnalyseurSyntaxique {
 
-    /**
-     * Analyseur lexical
-     */
-    private final AnalyseurLexical analyseurLexical;
-
-    /**
-     * Unite lexicale courrante
-     */
+    private AnalyseurLexical anal;
     private String uniteCourante;
+    private static final String erreurIDF = "Identificateur valide attendu";
+    private static final String erreurCSTEntiere = "Constante entiere valide attendue";
+    private static final String erreurAffectation = "Symbole := attendu";
+    private static final String erreurEOF = "EOF attendu";
+    private static final String erreurProgramme = "Mot clé programme attendu";
 
-    /**
-     * Constructeur d'analyseur Syntaxique, utilise un analyseur lexical sur un fichier
-     *
-     * @param file Fichier .plic a analyser
-     * @throws FileNotFoundException Erreur si le fichier n'est pas trouve
-     */
     public AnalyseurSyntaxique(File file) throws FileNotFoundException {
-        analyseurLexical = new AnalyseurLexical(file);
+        anal = new AnalyseurLexical(file);
+        uniteCourante = "";
     }
 
-    /**
-     * Analyse syntaxique globale d'un fichier .plic
-     *
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
-     */
-    public Bloc analyse() throws ErreurSyntaxique, DoubleDeclaration {
-
-        // L'untite lexicale courrante est initialisee
-        this.uniteCourante = this.analyseurLexical.next();
-
-        // Analyser lexicalement le programme
-        Bloc bloc = this.analyseProg();
-
-        // Verifier que la fin du .plic est bien EOF
-        if (!this.uniteCourante.equals(Consts.EOF)) throw new ErreurSyntaxique("EOF Attendu");
-
-        return bloc;
+    private void changerUnite() throws SyntaxException {
+        uniteCourante=anal.next();
     }
 
-    /**
-     * Analyse lexicale du programme plic
-     *
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
-     */
-    private Bloc analyseProg() throws ErreurSyntaxique, DoubleDeclaration {
-        // Regarder si le premier mot est bien "programme"
-        if (!this.uniteCourante.equals(Consts.PROG_START)) throw new ErreurSyntaxique("Programme attendu");
-        // Passer au mot suivant (idf en temps normal)
-        this.uniteCourante = this.analyseurLexical.next();
-        // Verifier que ce mot est bien un idf
-        if (!this.estIdf()) {
-            throw new ErreurSyntaxique("Idf attendu : nom du programme");
+    public Bloc analyse() throws SyntaxException {
+        changerUnite();
+        Bloc b = analyseProg();
+        if (!this.uniteCourante.equals(AnalyseurLexical.EOF)) {
+            throw new SyntaxException(erreurEOF);
         }
-        // Passage dans le bloc principal ( "{" )
-        this.uniteCourante = this.analyseurLexical.next();
-        return this.analyseBloc();
+        return b;
     }
 
-    /**
-     * Permet de verifier que l'unite courrante correspond a un mot clef precis
-     *
-     * @param terminal mot clef
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme (terminal innatendu)
-     */
-    private void analyseTerminale(String terminal) throws ErreurSyntaxique {
-        // Verifier que l'unite courrante est bien un mot clef attendu
-        if (!this.uniteCourante.equals(terminal)) throw new ErreurSyntaxique(terminal + " attendu");
-        // Passer a l'unite lexicale suivante
-        this.uniteCourante = this.analyseurLexical.next();
+
+
+    private Bloc analyseProg() throws SyntaxException {
+        if (!uniteCourante.equals("programme"))
+            throw new SyntaxException(erreurProgramme);
+        changerUnite();
+        if (!estIdf())
+            throw new SyntaxException(erreurIDF);
+        String nomProg = uniteCourante;
+        changerUnite();
+        return analyseBloc(nomProg);
     }
 
-    /**
-     * Analyser l'intérieur d'un bloc (moceau de texte entre { et })
-     *
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
-     */
-    private Bloc analyseBloc() throws ErreurSyntaxique, DoubleDeclaration {
-
-        Bloc bloc = new Bloc();
-
-        // Regarder qu'on commence par {
-        this.analyseTerminale(Consts.BLOC_OPEN);
-        // Iterer sur analyseDeclaration et analyseInstruction tant qu'on est dans un bloc
-
-        // Verifier si il s'agit d'une declaration ou d'une instruction
-        while (uniteCourante.equals("entier") || uniteCourante.equals("tableau")) {
-            analyseDeclaration();
+    private Bloc analyseBloc(String nomProg) throws SyntaxException {
+        analyseTerminal("{");
+        try {
+            while (true)
+                analyseDeclaration();
+        } catch (DeclarationException e) {
+            throw e;
+        } catch (SyntaxException s) {
+            //Laisse passer volantairement le programme car il est possible que aucune déclaration n'est été faite
         }
-        bloc.ajouter(analyseInstruction());
-
-        while (!this.uniteCourante.equals(Consts.BLOC_CLOSE)) {
-            bloc.ajouter(analyseInstruction());
+        try {
+            if (isEnd())
+                throw new AtLeastOneInstructionException();
+        } catch (AtLeastOneInstructionException e) {
+            throw e;
         }
-
-        // Verifier qu'une fois en dehors de la boucle, il s'agit de la fin du bloc
-        this.analyseTerminale(Consts.BLOC_CLOSE);
-
-        return bloc;
+        Bloc b = new Bloc(nomProg);
+        do {
+            Instruction i = analyseInstruction();
+            b.ajouter(i);
+        } while (!isEnd());
+        analyseTerminal("}");
+        return b;
     }
 
-    /**
-     * Analyser si l'unite lexicale courrante est une instruction
-     *
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
-     */
-    private Instruction analyseInstruction() throws ErreurSyntaxique {
+    private boolean isEnd() {
+        return uniteCourante.equals("}") || uniteCourante.equals(AnalyseurLexical.EOF);
+    }
 
-        Instruction instruction;
-        // Verifier que l'unite lexicale est valide et qu'il ne s'agit pas du mot clef ecrire
-        if (!this.uniteCourante.equals(Consts.PRINT)) {
-            instruction = analyseAffectation();
-
-        } else {
-            instruction = analyseEcrire();
+    private void analyseDeclaration() throws SyntaxException {
+        ArrayList<String> type = analyseType();
+        if (!estIdf()) {
+            throw new DeclarationException(erreurIDF);
         }
-        return instruction;
-    }
-
-    /**
-     * Analyser si le l'unite lexicale courrante est une instruction ecrire
-     *
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
-     */
-    private Ecrire analyseEcrire() throws ErreurSyntaxique {
-
-
-        analyseTerminale("ecrire");
-
-        // Analyser l'expression
-        Expression e = analyseExpression();
-
-        Ecrire ecrire = new Ecrire(e);
-
-        // Verifier que l'UL est bien un ;
-        analyseTerminale(Consts.SEPARATEUR);
-
-        return ecrire;
-    }
-
-    /**
-     * Analyser les declarations
-     *
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
-     */
-    private void analyseDeclaration() throws ErreurSyntaxique, DoubleDeclaration {
-        Entree entree = null;
-        Symbole symbole = new Symbole(this.uniteCourante);
-        // Regarder que le type de la declaration est valide
-        if (analyseType().equals("entier")) {
-            // Verifier qu'il s'agit d'un IDF
-            if (!this.estIdf()) {
-                throw new ErreurSyntaxique("Idf attendu");
-            }
-            entree = new Entree(this.uniteCourante);
-            this.uniteCourante = this.analyseurLexical.next();
-
-        } else {
-            if (this.uniteCourante.equals("[")) {
-                this.uniteCourante = this.analyseurLexical.next();
-
-                // Check de la taille du tableau
-                if (!pasConstanteEntiere()) {
-                    symbole.setTaille(Integer.parseInt(this.uniteCourante));  // On ajoute la taille du tableau dans le symbole
-                    this.uniteCourante = this.analyseurLexical.next();
-                } else throw new ErreurSyntaxique("Constante entiere attendue lors d'une déclaration de tableau");
-
-
-                analyseTerminale("]");
-
-                if (estIdf()) entree = new Entree(this.uniteCourante);
-                else throw new ErreurSyntaxique("Nom du tableau attendu");
-
-                this.uniteCourante = this.analyseurLexical.next();
-            }
+        String idf = uniteCourante;
+        changerUnite();
+        try {
+            analyseTerminal(";");
+            TDS tds = TDS.getInstance();
+            if (type.get(0).equals("entier"))
+                tds.ajouter(new Entree(idf),new SymboleEntier(type.get(0)));
+            else
+                tds.ajouter(new Entree(idf),new SymobleTableau(type.get(0),Integer.parseInt(type.get(1))));
+        } catch (SyntaxException | DoubleDeclaration s) {
+            throw new DeclarationException(s.getMessage());
         }
-
-        // Verifier que la fin de la declaration est bien un ;
-        analyseTerminale(Consts.SEPARATEUR);
-
-        TDS.getInstance().ajouter(entree, symbole);
     }
 
-    private String analyseType() throws ErreurSyntaxique {
-        String res;
-        if (this.uniteCourante.equals("entier") || this.uniteCourante.equals("tableau")) {
-            if (this.uniteCourante.equals("entier")) {
-                res = "entier";
-            } else {
-                res = "tableau";
-            }
-            this.uniteCourante = this.analyseurLexical.next();
-        } else {
-            throw new ErreurSyntaxique("Type attendu");
+    private ArrayList<String> analyseType() throws SyntaxException {
+        ArrayList<String> res = new ArrayList<>();
+        switch (uniteCourante) {
+            case "entier" :
+                analyseTerminal("entier");
+                res.add("entier");
+                break;
+            case "tableau" :
+                analyseTerminal("tableau");
+                analyseTerminal("[");
+                int i;
+                try {
+                    i = Integer.parseInt(uniteCourante);
+                } catch (NumberFormatException e) {
+                    throw new DeclarationException("Le tableau devrait avoir une constante entiere");
+                }
+                if (!estCstEntiere() || i <=0) {
+                    throw new DeclarationException(erreurCSTEntiere);
+                }
+                String chiffre = uniteCourante;
+                changerUnite();
+                analyseTerminal("]");
+                res.add("tableau");
+                res.add(chiffre);
+                break;
+            default:
+                throw new SyntaxException("");
         }
         return res;
     }
 
-    /**
-     * Analyser les affectations
-     *
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
-     */
-    private Affectation analyseAffectation() throws ErreurSyntaxique {
+    private Instruction analyseInstruction() throws SyntaxException {
+        Instruction i;
+        switch (uniteCourante) {
+            case "ecrire" :
+            case "lire" :
+                i = analyseES();
+                break;
+            case "pour" :
+            case "tantque" :
+                i = analyseIteration();
+                break;
+            case "si":
+                i = analyseCondition();
+                break;
+            default:
+                i=analyseAffectation();
+                break;
+        }
+        return i;
+    }
 
-        // Analyse qu'il s'agit d'un acces
-        Acces acces = analyseAcces();
+    private Instruction analyseIteration() throws SyntaxException {
+        Instruction res = null;
+        switch (uniteCourante) {
+            case "pour":
+                changerUnite();
+                if(!estIdf())
+                    throw new SyntaxException(erreurIDF);
+                Idf idf = new Idf(uniteCourante);
+                changerUnite();
+                analyseTerminal("dans");
+                Expression e1 = analyseExpression();
+                analyseTerminal("..");
+                Expression e2 = analyseExpression();
+                analyseTerminal("repeter");
+                Bloc bloc = analyseBloc(null);
+                res = new Pour(idf,e1,e2,bloc);
+                break;
+            case "tantque":
+                changerUnite();
+                analyseTerminal("(");
+                Expression etantque = analyseExpression();
+                analyseTerminal(")");
+                analyseTerminal("repeter");
+                Bloc bloc1 = analyseBloc(null);
+                res = new Tantque(etantque,bloc1);
+                break;
+            default:
+                throw new SyntaxException("Mot cle inconnu");
+        }
+        return res;
+    }
 
-        analyseTerminale(Consts.AFFECTATION);
-        // Analyseer qu'il s'agit d'une expression
+    private Instruction analyseCondition() throws SyntaxException {
+        changerUnite();
+        analyseTerminal("(");
         Expression e = analyseExpression();
-
-        Affectation affectation = new Affectation(e, acces);
-
-        // Verifier que l'UL est une ;
-        analyseTerminale(Consts.SEPARATEUR);
-
-        return affectation;
-    }
-
-    /**
-     * Analyser les acces
-     *
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
-     */
-    private Acces analyseAcces() throws ErreurSyntaxique {
-        Acces acces;
-        // Verifier qu'il s'agit d'un Idf
-        if (!this.estIdf()) {
-            throw new ErreurSyntaxique("Idf attendu");
+        analyseTerminal(")");
+        analyseTerminal("alors");
+        Bloc b1 = analyseBloc(null);
+        Bloc b2 = null;
+        try {
+            analyseTerminal("sinon");
+            b2=analyseBloc(null);
+        }catch (SyntaxException excep) {
+            //laisse passer
         }
-        Idf idf = new Idf(this.uniteCourante);
-        acces = new Acces(idf);
-        this.uniteCourante = this.analyseurLexical.next();
+        return new Condition(b1,e,b2);
+    }
 
-        if (this.uniteCourante.equals("[")) {
-            this.uniteCourante = this.analyseurLexical.next();
-            Expression e = analyseExpression();
-            acces = new Acces(idf);
-            acces.setExpression(e);
-            analyseTerminale("]");
+    private Affectation analyseAffectation() throws SyntaxException {
+        Affectation a = new Affectation(null,null);
+        a.setIdentificateur(analyseAcces());
+        if (!uniteCourante.equals(":=")) {
+            throw new SyntaxException(erreurAffectation);
         }
-
-        return acces;
+        uniteCourante=anal.next();
+        a.setExpression(analyseExpression());
+        analyseTerminal(";");
+        return a;
     }
 
-    /**
-     * Analyser une expression
-     *
-     * @throws ErreurSyntaxique Erreur Syntaxique dans le programme
-     */
-    private Expression analyseExpression() throws ErreurSyntaxique {
+    private Acces analyseAcces() throws SyntaxException {
+        if (!estIdf())
+            throw new SyntaxException(erreurIDF);
+        return estAcces();
+    }
 
-
-        Expression expression;
-
-        if (!estIdf() && pasConstanteEntiere()) {
-            throw new ErreurSyntaxique("idf ou entier attendu");
-        } else if (estIdf())
-            expression = analyseAcces();
-        else {
-            expression = new Nombre(Integer.parseInt(uniteCourante));
-            this.uniteCourante = this.analyseurLexical.next();
+    private Instruction analyseES() throws SyntaxException {
+        Instruction res ;
+        switch (uniteCourante) {
+            case "ecrire" :
+                changerUnite();
+                res = new Ecrire(analyseExpression());
+                break;
+            case "lire" :
+                changerUnite();
+                if (!estIdf())
+                    throw new SyntaxException(erreurIDF);
+                res = new Lire(new Idf(uniteCourante));
+                changerUnite();
+                break;
+            default:
+                throw new SyntaxException("Mot cle inconnu");
         }
-
-        return expression;
+        analyseTerminal(";");
+        return res;
     }
 
-    /**
-     * Verifier qu'un mot est une constante entiere (Int)
-     *
-     * @return l'unite lexicale courrante est un entier
-     */
-    private boolean pasConstanteEntiere() {
-        return !this.uniteCourante.matches("[0-9]+");
+    private Expression analyseExpression() throws SyntaxException {
+        Expression operande1 = analyseOperande();
+        Operateur operateur;
+        try {
+            operateur = analyseOperateur();
+        } catch (SyntaxException se) {
+            return operande1;
+        }
+        Expression operande2 = analyseOperande();
+        operateur.setE1(operande1);
+        operateur.setE2(operande2);
+        return operateur;
     }
 
-    /**
-     * Verifier qu'un Idf est valide
-     *
-     * @return l'unite lexicale courrante est un Idf
-     */
+    private Operateur analyseOperateur() throws SyntaxException {
+        Operateur res;
+        switch (uniteCourante) {
+            case "+":
+                res = new Somme();
+                break;
+            case "-" :
+                res =  new Soustraction();
+                break;
+            case "*" :
+                res = new Multiplication();
+                break;
+            case ">" :
+                res = new Superieur();
+                break;
+            case "<" :
+                res = new Inferieur();
+                break;
+            case "#" :
+                res = new Different();
+                break;
+            case "=" :
+                res = new Equal();
+                break;
+            case "<=" :
+                res = new InferieurOuEgal();
+                break;
+            case ">=" :
+                res = new SuperieurOuEgal();
+                break;
+            case "et" :
+                res = new Et();
+                break;
+            case "ou" :
+                res = new Ou();
+                break;
+            default:
+                throw new SyntaxException("L'operateur est inconnu");
+        }
+        changerUnite();
+        return res;
+    }
+
+    private Expression analyseOperande() throws SyntaxException {
+        Expression e ;
+        if (!estCstEntiere()) {
+            switch (uniteCourante) {
+                case "non" :
+                    changerUnite();
+                    e = analyseExpression();
+                    e.setNeg("Non");
+                    break;
+                case "-" :
+                    changerUnite();
+                    analyseTerminal("(");
+                    e = analyseExpression();
+                    e.setNeg("Moins");
+                    analyseTerminal(")");
+                    break;
+                case "(" :
+                    changerUnite();
+                    e = analyseExpression();
+                    analyseTerminal(")");
+                    break;
+                default:
+                    e = estAcces();
+                    break;
+            }
+        } else {
+            try {
+                e = new Nombre(Integer.parseInt(uniteCourante));
+            } catch (NumberFormatException nfe) {
+                throw new SyntaxException("Nombre trop grand pour un entier");
+            }
+            changerUnite();
+        }
+        return e;
+    }
+
+    private Acces estAcces() throws SyntaxException {
+        String idf = uniteCourante;
+        boolean resVar = estIdf();
+        changerUnite();
+        try {
+            if (resVar) {
+                analyseTerminal("[");
+            }
+        } catch (SyntaxException s) {
+            return new Idf(idf);
+        }
+        Expression e = analyseExpression();
+        analyseTerminal("]");
+        return new AccesTableau(new Idf(idf),e);
+    }
+
+    private void analyseTerminal(String terminal) throws SyntaxException {
+        if (!uniteCourante.equals(terminal))
+            throw new SyntaxException(terminal+" attendu");
+        changerUnite();
+    }
+
     private boolean estIdf() {
-        // Vrai si le nom du programme est uniquement des lettres
-        return ((!this.uniteCourante.equals("")) && (this.uniteCourante.matches(Consts.REGEX_IDF)));
+        return uniteCourante.matches("[a-zA-Z]+");
     }
 
+    private boolean estCstEntiere () {
+        return uniteCourante.matches("[0-9]+");
+    }
 
+    public Token getToken() {
+        return anal.getToken();
+    }
 }
